@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Rabbit Hole",
+    "description": "New way to search, a guided search experience to efficiently research the topic at hand!",
+    "version": "1.0",
+    "action": {
+      "default_popup": "index.html",
+      "default_icon": "rabbit.jpeg"
+    },
+    "permissions": [
+      "storage",
+      "tabs"
+    ],
+    "background": {
+      "service_worker": "service.js"
+    }
+  }
