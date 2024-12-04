@@ -5,7 +5,7 @@
     "version": "1.0",
     "action": {
       "default_popup": "index.html",
-      "default_icon": "rabbit.jpeg"
+      "default_icon": "rabbit.png"
     },
     "permissions": [
       "storage",
@@ -20,6 +20,13 @@
     "side_panel": {
       "default_path": "panel.html"
     },
+    "web_accessible_resources": [
+        {
+            "resources": ["rabbit.png"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    
     "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -28,5 +35,7 @@
             "https://google.com/*"
         ]
     }
+
+    
   ]
 }

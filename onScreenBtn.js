@@ -49,8 +49,9 @@ var btnRabbit = document.createElement("BUTTON");
 btnRabbit.id = "rabbitEntry";
 
 var imgRabbit = document.createElement("IMG");
-imgRabbit.src = "./rabbit.jpeg";
-imgRabbit.alt = "Rabbit";
+
+imgRabbit.src = chrome.runtime.getURL("rabbit.png");
+// imgRabbit.alt = "Rabbit Image";
 imgRabbit.style.width = "100%";
 imgRabbit.style.height = "100%";
 
@@ -63,10 +64,12 @@ btnRabbit.style.border = "none";
 btnRabbit.style.borderRadius = "5px";
 btnRabbit.style.overflow = "hidden";
 btnRabbit.style.padding = "0";
-btnRabbit.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+btnRabbit.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 1.4)";
 btnRabbit.style.cursor = "pointer";
 btnRabbit.style.backgroundColor = "#fff";
-btnRabbit.style.marginTop = "10px"; // Adjust spacing below the Plus button
+btnRabbit.style.marginTop = "10px";
+btnRabbit.style.color = "pink";
+
 
 // Adding hover effect to the Rabbit button
 btnRabbit.onmouseover = function () {
