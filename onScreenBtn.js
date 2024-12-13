@@ -51,7 +51,6 @@ btnRabbit.id = "rabbitEntry";
 var imgRabbit = document.createElement("IMG");
 
 imgRabbit.src = chrome.runtime.getURL("rabbit.png");
-// imgRabbit.alt = "Rabbit Image";
 imgRabbit.style.width = "100%";
 imgRabbit.style.height = "100%";
 
@@ -116,6 +115,7 @@ function toggleWrap() {
     // Send message to service worker (service.js) to open panel
     chrome.runtime.sendMessage("toggle_panel", () => {});
 }
+
 function digWrap() {
     
     //Update to checkmark on click
