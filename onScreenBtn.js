@@ -117,7 +117,6 @@ function toggleWrap() {
 }
 
 function digWrap() {
-    
     //Update to checkmark on click
     const digButton = document.getElementById("dig");
     if (digButton.innerHTML == "+") {
