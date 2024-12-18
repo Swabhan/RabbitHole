@@ -2,7 +2,8 @@
 A script that the browser runs in the background while also allowing us to tap into the chrome extensions API
 
 ##### Our active Service Workers
-service.js - Does the lifting of adding web pages to our context, parsing/updating our graph, and integrating Google's build in AI model
+service.js - Does the lifting of adding web pages to our context, communicates with context scripts, parsing/updating our graph, building active path, and integrating Google's build in AI model
+
 collab.js - Allows collaboration between multiple users within a single rabbit hole, works closely with service.js
 
 ## Context Scripts

@@ -4,6 +4,11 @@
     This Service worker acts as a proxy between the browser's API and the key functionalities
 */
 
+
+//--------
+// Setup
+//--------
+
 chrome.storage.local.get("rabbitId", function(data)
 {
     /*
@@ -15,19 +20,14 @@ chrome.storage.local.get("rabbitId", function(data)
     }
 });
 
+//Enable Side Panel to open on button click
+chrome.sidePanel
+          .setPanelBehavior({ openPanelOnActionClick: true })
+          .catch((error) => console.error(error));
 
-//Auto Add - Potential Feature?
-function ifAuto(){
-    chrome.tabs.onUpdated.addListener(function(){
-        /*
-        Listener to detect tab changes, entry point for search history updates
-        */
-        chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-            updateRabbitHole(tabs[0].url);
-        });
-    });
-}
-
+//-------------------------
+// "Dig" for update/delete
+//-------------------------
 
 function updateRabbitHole(url){
     chrome.storage.local.get(["rabbitId"]).then((result) => {
@@ -93,6 +93,22 @@ function deleteRabbitHole(url){
     });
 }
 
+//Auto Add - Potential Feature?
+function ifAuto(){
+    chrome.tabs.onUpdated.addListener(function(){
+        /*
+        Listener to detect tab changes, entry point for search history updates
+        */
+        chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+            updateRabbitHole(tabs[0].url);
+        });
+    });
+}
+
+//---------------
+//Path Builder
+//---------------
+
 function BuildPath(url){
     /*
     Build path to the current URL from entry
@@ -142,6 +158,10 @@ function BuildPath(url){
     return path;
 }
 
+//---------------
+//Event Listeners
+//---------------
+
 //Listeners for tabs changes
 let windowId;
 chrome.tabs.onActivated.addListener(function (activeInfo) {
@@ -159,11 +179,9 @@ chrome.tabs.onUpdated.addListener(function (activeInfo) {
 });
 
 
-//Enable Side Panel to open on button click
-chrome.sidePanel
-          .setPanelBehavior({ openPanelOnActionClick: true })
-          .catch((error) => console.error(error));
-
+//------------------
+//Message Listeners
+//------------------
 
 //Reciever for messages from content scripts
 chrome.runtime.onMessage.addListener((message) => {
