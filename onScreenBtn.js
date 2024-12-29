@@ -103,6 +103,21 @@ btnPlus.onmouseout = function () {
     btnPlus.style.backgroundColor = "#34A853";
 };
 
+
+//Set digButton functionality
+chrome.runtime.sendMessage("contains", (response) => {
+    //If rabbit hole contains url, set button to checked, otherwise +
+    const digButton = document.getElementById("dig");
+
+    if(response["return"] == "false") {
+        digButton.innerHTML = "+";
+    }
+    else {
+        digButton.innerHTML = "✔";
+    }
+    
+});
+
 // Appending buttons to the container
 btnContainer.appendChild(btnPlus); // Add Plus button first
 btnContainer.appendChild(btnRabbit); // Add Rabbit button second

@@ -82,10 +82,14 @@ function deleteRabbitHole(url){
         const prev = rabbitData[url]["prev"]
         const next = rabbitData[url]["next"]
 
+        rabbitData[prev]["next"]
+
         //Remove node, update prev's next and next's prev
         next.forEach((item, index) => {
-            rabbitData[item]["prev"] = prev;
-            rabbitData[prev]["next"].push(item);
+            if((item in rabbitData)){ //refactor, make removing from list proper (different ds?)
+                rabbitData[item]["prev"] = prev;
+                rabbitData[prev]["next"].push(item);
+            }
         });
 
         //Set rabbit hole
@@ -125,10 +129,10 @@ function BuildPath(url){
         
         if(url in rabbitData){
             //Build to current path, traverse backwards
-            let currentURl = url
+            let currentURl = url;
 
             while(currentURl != rabbitData["entry"]){
-                path.append(currentURl);
+                path.push(currentURl);
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
@@ -140,21 +144,21 @@ function BuildPath(url){
         }
 
         else {
-            //If url is not accounted for, build from current node with url appended
-            let currentURl = result.rabbitId["curr"]
+            //If url is not accounted for, build from current node with url pushed
+            let currentURl = rabbitData["curr"];
 
-            while(currentURl != rabbitData["entry"]){
-                path.append(currentURl);
+            while(currentURl != null && currentURl != rabbitData["entry"]){
+                path.push(currentURl);
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
             //Add current url to end of path
-            path.append(url);
-
+            path.push(url);
         }
     });
 
     console.log(path);
+
     return path;
 }
 
@@ -165,6 +169,7 @@ function BuildPath(url){
 //Listeners for tabs changes
 let windowId;
 chrome.tabs.onActivated.addListener(function (activeInfo) {
+    //On Tab Open
     windowId = activeInfo.windowId;
 
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
@@ -173,8 +178,15 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 });
 
 chrome.tabs.onUpdated.addListener(function (activeInfo) {
+    //On tab Change
+    let proceed = true;
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-        BuildPath(tabs[0].url); // To do - Send data to side panel for display
+        if(proceed){
+            BuildPath(tabs[0].url); // To do - Send data to side panel for display
+        }
+
+        proceed = false;
+        
     });
 });
 
@@ -184,12 +196,26 @@ chrome.tabs.onUpdated.addListener(function (activeInfo) {
 //------------------
 
 //Reciever for messages from content scripts
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //onScreenBtn.js - refer for further context
 
     //If Rabbit Icon is clicked, side panel functionality
     if (message === 'toggle_panel') {
       chrome.sidePanel.open({ windowId: windowId });
+    }
+
+    //When page opens, message context script confirming url containment
+    else if (message === 'contains') {
+        chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+            chrome.storage.local.get(["rabbitId"]).then((result) => {
+                let rabbitData = result.rabbitId || {"curr": null};
+                if(tabs[0].url in rabbitData){
+                    sendResponse({"return": "true"});
+                } else {
+                    sendResponse({"return": "false"});
+                }
+            });
+        });
     }
 
     //If "+" is clicked, dig functionality
@@ -205,4 +231,6 @@ chrome.runtime.onMessage.addListener((message) => {
             deleteRabbitHole(tabs[0].url);
         });
     }
+
+    return true;
 });
