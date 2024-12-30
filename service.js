@@ -74,6 +74,8 @@ function deleteRabbitHole(url){
     chrome.storage.local.get(["rabbitId"]).then((result) => {
         /*
         Deletes element from graph to cover a hole
+
+        To Do - next for each URL should be alternative ds to list for ease of deletion
         */
 
         let rabbitData = result.rabbitId || {"curr": null};
@@ -82,7 +84,6 @@ function deleteRabbitHole(url){
         const prev = rabbitData[url]["prev"]
         const next = rabbitData[url]["next"]
 
-        rabbitData[prev]["next"]
 
         //Remove node, update prev's next and next's prev
         next.forEach((item, index) => {
@@ -91,6 +92,8 @@ function deleteRabbitHole(url){
                 rabbitData[prev]["next"].push(item);
             }
         });
+
+        delete rabbitData[url];
 
         //Set rabbit hole
         chrome.storage.local.set({ "rabbitId": rabbitData });
