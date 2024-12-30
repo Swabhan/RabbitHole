@@ -129,6 +129,9 @@ function BuildPath(url){
     //Recieve data to parse
     chrome.storage.local.get(["rabbitId"]).then((result) => {
         let rabbitData = result.rabbitId || {"curr": null};
+
+        //Add current url to end of path
+        path.push(url);
         
         if(url in rabbitData){
             //Build to current path, traverse backwards
@@ -155,12 +158,9 @@ function BuildPath(url){
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
-            //Add current url to end of path
-            path.push(url);
         }
     });
 
-    console.log(path);
 
     return path;
 }
@@ -169,6 +169,8 @@ function BuildPath(url){
 //Event Listeners
 //---------------
 
+let currPath; //Limits to path building to one time
+
 //Listeners for tabs changes
 let windowId;
 chrome.tabs.onActivated.addListener(function (activeInfo) {
@@ -176,7 +178,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
     windowId = activeInfo.windowId;
 
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-        BuildPath(tabs[0].url); // To do - Send data to side panel for display
+        currPath = BuildPath(tabs[0].url); // To do - Send data to side panel for display
     });
 });
 
@@ -185,7 +187,7 @@ chrome.tabs.onUpdated.addListener(function (activeInfo) {
     let proceed = true;
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
         if(proceed){
-            BuildPath(tabs[0].url); // To do - Send data to side panel for display
+            currPath = BuildPath(tabs[0].url); // To do - Send data to side panel for display
         }
 
         proceed = false;
@@ -200,11 +202,22 @@ chrome.tabs.onUpdated.addListener(function (activeInfo) {
 
 //Reciever for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    //onScreenBtn.js - refer for further context
+    //Messages are sent from content scripts - refer to manifest.json for list of active context scripts
+    //Allows direct communication with service worker
 
     //If Rabbit Icon is clicked, side panel functionality
     if (message === 'toggle_panel') {
       chrome.sidePanel.open({ windowId: windowId });
+    }
+
+    //Send data to panel when opened - refer to panel.js
+    else if (message === 'panel_data') {
+        chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+            chrome.storage.local.get(["rabbitId"]).then((result) => {
+                let rabbitData = result.rabbitId || {"curr": null};
+                sendResponse({"fullGraph": rabbitData, "path": currPath});
+            });
+        });
     }
 
     //When page opens, message context script confirming url containment
