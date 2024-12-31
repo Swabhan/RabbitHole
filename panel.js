@@ -20,15 +20,17 @@ chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
         var ul = document.getElementById("linked-list");
         var li = document.createElement("li");
 
-        //Create Node
+        //Create Node for Fav Icon
         var divNode = document.createElement("div");
-        var nodeText = document.createTextNode("1");
-        divNode.appendChild(nodeText)
         divNode.className = "node";
+        const img = document.createElement('img');
+        img.src = response["path"][i]["favIcon"];
+        img.alt = '!';
+        divNode.appendChild(img)
 
         //Create Content
         var divContent = document.createElement("div");
-        const contentText = document.createTextNode(response["path"][i]);
+        const contentText = document.createTextNode(response["path"][i]["title"]);
         var contentP = document.createElement("p");
         contentP.appendChild(contentText);
         divContent.appendChild(contentP);
@@ -38,8 +40,14 @@ chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
         li.appendChild(divNode);
         li.appendChild(divContent);
 
-        //Add list item to UL
-        ul.appendChild(li);
+        //Set list item to a linkable url
+        const anchor = document.createElement('a');
+        anchor.href = response["path"][i]["url"];
+        anchor.target = "_blank";
+        anchor.appendChild(li);
+        
+        //Add anchor which includes list item to UL
+        ul.appendChild(anchor);
     
     }
 

@@ -29,7 +29,7 @@ chrome.sidePanel
 // "Dig" for update/delete
 //-------------------------
 
-function updateRabbitHole(url){
+function updateRabbitHole(url, title, favIconUrl){
     chrome.storage.local.get(["rabbitId"]).then((result) => {
         /*
         Updates current rabbit hole when data arrives
@@ -42,7 +42,9 @@ function updateRabbitHole(url){
             rabbitData[url] = {
                 "method": "search: ",
                 "prev": rabbitData["curr"],
-                "next": null
+                "next": null,
+                "title": title,
+                "favIcon": favIconUrl
             };
            
             //Set entry point for graph
@@ -116,7 +118,7 @@ function ifAuto(){
 //Path Builder
 //---------------
 
-function BuildPath(url){
+function BuildPath(url, title, favIconUrl){
     /*
     Build path to the current URL from entry
 
@@ -129,16 +131,18 @@ function BuildPath(url){
     //Recieve data to parse
     chrome.storage.local.get(["rabbitId"]).then((result) => {
         let rabbitData = result.rabbitId || {"curr": null};
-
-        //Add current url to end of path
-        path.push(url);
         
         if(url in rabbitData){
             //Build to current path, traverse backwards
             let currentURl = url;
 
             while(currentURl != rabbitData["entry"]){
-                path.push(currentURl);
+                path.push({
+                    "url": url,
+                    "title": rabbitData[currentURl]["title"],
+                    "favIcon": rabbitData[currentURl]["favIcon"]
+                });
+
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
@@ -153,8 +157,19 @@ function BuildPath(url){
             //If url is not accounted for, build from current node with url pushed
             let currentURl = rabbitData["curr"];
 
+            path.push({
+                "url": url,
+                "title": title,
+                "favIcon": favIconUrl
+            });
+
             while(currentURl != null && currentURl != rabbitData["entry"]){
-                path.push(currentURl);
+                path.push({
+                    "url": url,
+                    "title": rabbitData[currentURl]["title"],
+                    "favIcon": rabbitData[currentURl]["favIcon"]
+                });
+                
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
@@ -178,7 +193,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
     windowId = activeInfo.windowId;
 
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-        currPath = BuildPath(tabs[0].url); // To do - Send data to side panel for display
+        currPath = BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl); // To do - Send data to side panel for display
     });
 });
 
@@ -187,7 +202,7 @@ chrome.tabs.onUpdated.addListener(function (activeInfo) {
     let proceed = true;
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
         if(proceed){
-            currPath = BuildPath(tabs[0].url); // To do - Send data to side panel for display
+            currPath = BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl); // To do - Send data to side panel for display
         }
 
         proceed = false;
@@ -237,7 +252,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //If "+" is clicked, dig functionality
     else if (message === 'dig') {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-            updateRabbitHole(tabs[0].url);
+            updateRabbitHole(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
         });
     }
 
