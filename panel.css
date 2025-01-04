@@ -12,7 +12,7 @@ body {
   #header {
     text-align: center;
     color: #0077fffb;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin: 10px;
   }
 
@@ -33,7 +33,7 @@ body {
     content: none;
   }
 
-  #linked-list li::after {
+  #linked-list a::after {
     content: '';
     width: 2px;
     height: 30px;
@@ -53,16 +53,17 @@ body {
     align-items: center;
     justify-content: center;
     margin-right: 10px;
+    margin-left: 10px;
     overflow: hidden;
     position: relative;
   }
   
-  .linked-list .node img {
+  /* .linked-list .node img {
     width: 100%;
     height: 100%;
     margin-right: 15px;
     object-fit: cover;
-  }
+  } */
   
   .linked-list .node + .node {
     margin-left: 10px;
@@ -72,10 +73,12 @@ body {
   #linked-list .content {
     flex: 1;
     padding: 10px;
+    margin-left: 4%;
+    margin-right: 4%;
     background-color: #f4f4f4;
     border: 1px solid #ddd;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   #linked-list .content p {

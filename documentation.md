@@ -17,6 +17,7 @@ Allows us to display UI in our browser's side panel
 
 ##### Our active Side Panels
 panel.html - Shows the current information of our currently built rabbit hole
+graphPanel.html - Shows the whole graph of current rabbit hole
 guideSearch.html - Shows number of recommended searches for our user based on given prompt: "Help me research..."
 
 panel.js - Works closely with active service workers to recieve latest data to display

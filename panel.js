@@ -11,7 +11,6 @@
     Data consists of current path and whole graph
 */
 chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
-    console.log(response["path"]);
 
     const pathLength = response["path"].length;
 
@@ -25,7 +24,7 @@ chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
         divNode.className = "node";
         const img = document.createElement('img');
         img.src = response["path"][i]["favIcon"];
-        img.alt = '!';
+        img.alt = '';
         divNode.appendChild(img)
 
         //Create Content
@@ -37,7 +36,7 @@ chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
         divContent.className = "content";
         
         //Add node and content to List Item
-        li.appendChild(divNode);
+        // li.appendChild(divNode);
         li.appendChild(divContent);
 
         //Set list item to a linkable url
@@ -50,6 +49,5 @@ chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
         ul.appendChild(anchor);
     
     }
-
     
 });
