@@ -3,12 +3,16 @@
   <head>
     <title>Rabbit Hole</title>
     <link rel="stylesheet" href="panel.css">
-    <style>
-      
-    </style>
   </head>
   <body>
     <div class="side-panel">
+      
+      <select id="page-selector">
+        <option value="add-new">Add New</option>
+      </select>
+
+      <div id="popup-container" style="display: none;"></div>
+
       <br>
 
       <h1 id="header">Path To Your Page</h1>
@@ -38,7 +42,7 @@
     </div>
 
    
-
-    <script src="panel.js"></script>
+    <script src="panel.js" defer></script>
+    
   </body>
 </html>

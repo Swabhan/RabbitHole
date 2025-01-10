@@ -12,7 +12,11 @@ var rabbitName = "";
 
 //Set Rabbit Default to Tutorial
 async function getRabbitName(){
-    await chrome.storage.local.get(["rabbit"]).then((result) => {
+    await chrome.storage.local.get("rabbit").then((result) => {
+        if (!result.rabbit) {
+            chrome.storage.local.set({"rabbit": {"curr": "Tutorial", "holes": []}});
+        }
+
         rabbitName = result.rabbit["curr"];
     }).catch((error) => {
         chrome.storage.local.set({"rabbit": {"curr": "Tutorial", "holes": []}});
@@ -26,11 +30,14 @@ async function getRabbitName(){
 async function setupRabbit(){
     rabbitName = await getRabbitName();
 
-    chrome.storage.local.get([rabbitName]).then((result) => 
+    await chrome.storage.local.get([rabbitName]).then((result) => 
     {
-    
+        if (!result[rabbitName]) {
+            chrome.storage.local.set({ [rabbitName]: { "curr": null, "entry": null } });
+        }
+        
     }).catch((error) => {
-        chrome.storage.local.set({ rabbitName: {"curr": null, "entry": null}});
+        chrome.storage.local.set({ [rabbitName]: {"curr": null, "entry": null}});
     });
 
     return rabbitName
@@ -49,14 +56,14 @@ chrome.sidePanel
 //-------------------------
 
 async function updateRabbitHole(url, title, favIconUrl){
-    rabbitName = await getRabbitName();
+    rabbitName = await setupRabbit();
 
     await chrome.storage.local.get([rabbitName]).then((result) => {
         /*
         Updates current rabbit hole when data arrives
         */
 
-        let rabbitData = result.rabbitName || {"curr": null};
+        let rabbitData = result[rabbitName] || {"curr": null};
 
         //Update rabbit hole, if url hasn't been added previously
         if(!(url in rabbitData)){
@@ -87,43 +94,51 @@ async function updateRabbitHole(url, title, favIconUrl){
             
         }
         
-        console.log(rabbitData)
 
         //Set rabbit hole
-        chrome.storage.local.set({ "rabbitId": rabbitData });
+        chrome.storage.local.set({ [rabbitName]: rabbitData });
     });
 }
 
 
 async function deleteRabbitHole(url){
-    rabbitName = await getRabbitName();
+    rabbitName = await setupRabbit();
 
-    await chrome.storage.local.get(rabbitName).then((result) => {
+    await chrome.storage.local.get([rabbitName]).then((result) => {
         /*
         Deletes element from graph to cover a hole
 
         To Do - next for each URL should be alternative ds to list for ease of deletion
         */
 
-        let rabbitData = result.rabbitName || {"curr": null};
+        let rabbitData = result[rabbitName] || {"curr": null};
 
         //Temp holding variables
         const prev = rabbitData[url]["prev"]
         const next = rabbitData[url]["next"]
 
 
-        //Remove node, update prev's next and next's prev
-        next.forEach((item, index) => {
-            if((item in rabbitData)){ //refactor, make removing from list proper (different ds?)
-                rabbitData[item]["prev"] = prev;
-                rabbitData[prev]["next"].push(item);
+        if(next){
+            //Remove node, update prev's next and next's prev
+            next.forEach((item, index) => {
+                if((item in rabbitData)){ //refactor, make removing from list proper (different ds?)
+                    rabbitData[item]["prev"] = prev;
+                    rabbitData[prev]["next"].push(item);
+                }
+            });
+        }
+        else {
+            if(!prev && !next){
+                rabbitData[url]["prev"] = null
+                rabbitData[url]["next"] = null
             }
-        });
-
+        }
+        
         delete rabbitData[url];
+        rabbitData["curr"] = prev;
 
         //Set rabbit hole
-        chrome.storage.local.set({ "rabbitId": rabbitData });
+        chrome.storage.local.set({ [rabbitName]: rabbitData });
     });
 }
 
@@ -150,12 +165,14 @@ async function BuildPath(url, title, favIconUrl){
     Traverses backwards from current URL or latest node from graph
     */ 
 
+    rabbitName = await setupRabbit();
+
     //Path storage
     let path = [];
 
     //Recieve data to parse
-    await chrome.storage.local.get(["rabbitId"]).then((result) => {
-        let rabbitData = result.rabbitId || {"curr": null};
+    await chrome.storage.local.get([rabbitName]).then((result) => {
+        let rabbitData = result[rabbitName] || {"curr": null};
         
         if(url in rabbitData){
             //Build to current path, traverse backwards
@@ -171,11 +188,17 @@ async function BuildPath(url, title, favIconUrl){
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
+            path.push({
+                "url": currentURl,
+                "title": rabbitData[currentURl]["title"],
+                "favIcon": rabbitData[currentURl]["favIcon"]
+            });
+
             // Also update current url while here
-            result.rabbitId["curr"] = url;
+            result[rabbitName]["curr"] = url;
 
             //Set rabbit hole
-            chrome.storage.local.set({ "rabbitId": rabbitData });
+            chrome.storage.local.set({ [rabbitName]: rabbitData });
         }
 
         else {
@@ -198,9 +221,15 @@ async function BuildPath(url, title, favIconUrl){
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
+            path.push({
+                "url": currentURl,
+                "title": rabbitData[currentURl]["title"],
+                "favIcon": rabbitData[currentURl]["favIcon"]
+            });
+
+
         }
     });
-
 
     return path;
 }
@@ -217,8 +246,14 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
     //On Tab Open
     windowId = activeInfo.windowId;
 
+    let proceed = true;
     chrome.tabs.query({currentWindow: true, active: true}, async function(tabs){
-        currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl); // To do - Send data to side panel for display
+        if(proceed){
+            currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
+        }
+
+        proceed = false;
+        
     });
 });
 
@@ -227,7 +262,7 @@ chrome.tabs.onUpdated.addListener(function (activeInfo) {
     let proceed = true;
     chrome.tabs.query({currentWindow: true, active: true}, async function(tabs){
         if(proceed){
-            currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl); // To do - Send data to side panel for display
+            currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
         }
 
         proceed = false;
@@ -248,7 +283,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //If Rabbit Icon is clicked, side panel functionality
     if (message === 'toggle_panel') {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-            console.log("here");
             chrome.sidePanel.open({ tabId: tabs[0].id });
 
             chrome.sidePanel.setOptions({
@@ -257,12 +291,46 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     }
 
+    //Add new rabbit, will be present and selectable on dropdown in panel.html
+    else if (message.action === 'addNew') {
+        chrome.storage.local.get(["rabbit"]).then((result) => {
+            console.log(result);
+
+            //Update Result
+            result.rabbit.holes.push(message.rabbit);
+            result.rabbit.curr = message.rabbit;
+
+            chrome.storage.local.set(result);
+            setupRabbit();
+        });
+
+        sendResponse({ success: true });
+    }
+
+    //If different rabbit is selected, update current
+    else if (message.action === 'updateRabbit') {
+        chrome.storage.local.get(["rabbit"]).then((result) => {
+            console.log(result);
+
+            //Update Result
+            result.rabbit.curr = message.rabbit;
+
+            chrome.storage.local.set(result);
+            setupRabbit();
+        });
+
+        setupRabbit();
+
+        sendResponse({ success: true });
+    }
+
     //Send data to panel when opened - refer to panel.js
     else if (message === 'panel_data') {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-            chrome.storage.local.get([rabbitName]).then((result) => {
-                let rabbitData = result.rabbitName || {"curr": null};
-                sendResponse({"fullGraph": rabbitData, "path": currPath});
+            chrome.storage.local.get([rabbitName, "rabbit"]).then((result) => {
+
+                let rabbitData = result[rabbitName]  || {"curr": null};
+                sendResponse({"fullGraph": rabbitData, "path": currPath, "rabbitName": rabbitName, "holes": result["rabbit"]["holes"]});
             });
         });
     }
@@ -271,7 +339,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     else if (message === 'contains') {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
             chrome.storage.local.get([rabbitName]).then((result) => {
-                let rabbitData = result.rabbitName || {"curr": null};
+                let rabbitData = result[rabbitName] || {"curr": null};
                 if(tabs[0].url in rabbitData){
                     sendResponse({"return": "true"});
                 } else {

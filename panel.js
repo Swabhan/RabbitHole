@@ -11,7 +11,23 @@
     Data consists of current path and whole graph
 */
 chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
+    //--Adding list of rabbit holes to drop down
+    const pageSelector = document.getElementById("page-selector");
+    const numOfHoles = response["holes"].length;
+    for (var i = 0; i < numOfHoles; i++) { 
+      var option = document.createElement("option");
+      option.value = response["holes"][i];
+      option.text = response["holes"][i];
 
+      pageSelector.appendChild(option);
+      
+    }
+
+
+    //--Setting Specific Rabbit
+    pageSelector.value = response["rabbitName"];
+
+    //--Seting Panel Data
     const pathLength = response["path"].length;
 
     for (var i = 0; i < pathLength; i++) { 
@@ -50,4 +66,93 @@ chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
     
     }
     
+});
+
+
+/*
+    Add new data to dropdown
+
+    Functionality from add-new form + sending data
+*/
+function createPopup() {
+  const popupContainer = document.getElementById("popup-container");
+  popupContainer.style.display = "flex";
+
+  popupContainer.innerHTML = `
+    <div id="popup">
+      <h2>Add New Option</h2>
+      <input type="text" id="new-option-input" placeholder="Enter a name" />
+      <div>
+        <button id="submit-option">Submit</button>
+        <button id="cancel-option">Cancel</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("submit-option").addEventListener("click", () => {
+    const inputValue = document.getElementById("new-option-input").value.trim();
+    if (inputValue) {
+      addNewOption(inputValue);
+
+      //Add new rabbit hole to local storage
+      chrome.runtime.sendMessage(
+        { action: "addNew", rabbit: inputValue},
+        (response) => {}
+      );
+    }
+    closePopup();
+
+  });
+
+  document.getElementById("cancel-option").addEventListener("click", closePopup);
+}
+  
+function addNewOption(name) {
+  const select = document.getElementById("page-selector");
+  const newOption = document.createElement("option");
+  newOption.value = name.toLowerCase();
+  newOption.textContent = name;
+  select.appendChild(newOption);
+}
+
+function closePopup() {
+  const popupContainer = document.getElementById("popup-container");
+  popupContainer.style.display = "none";
+  popupContainer.innerHTML = "";
+  
+  location.reload();
+  return false;
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    /*
+        When new rabbit hole is selected, send data to service.js
+
+        Refresh Page to recieve relevant data
+    */
+    const pageSelector = document.getElementById("page-selector");
+
+    // Add an event listener for the change event
+    pageSelector.addEventListener("change", () => {
+        const selectedValue = pageSelector.value;
+        if (selectedValue === "add-new") {
+            createPopup();
+            this.value = "";
+        }
+
+        else {
+            //Send chosen rabbit hole, refreshes with relevant data
+            chrome.runtime.sendMessage(
+                { action: "updateRabbit", rabbit: pageSelector.value },
+                (response) => {}
+            );
+
+            location.reload();
+            return false;
+        }
+
+        
+        
+    });
 });
