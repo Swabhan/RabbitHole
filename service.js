@@ -81,7 +81,7 @@ async function updateRabbitHole(url, title, favIconUrl){
                 rabbitData["curr"] = url;
             } else {
                 //If next is null, use as empty array
-                if(rabbitData["curr"]["next"] == null){
+                if(rabbitData[rabbitData["curr"]]["next"] == null){
                     rabbitData[rabbitData["curr"]]["next"] = [];
                 }
 
@@ -221,11 +221,14 @@ async function BuildPath(url, title, favIconUrl){
                 currentURl = rabbitData[currentURl]["prev"];
             }
 
-            path.push({
-                "url": currentURl,
-                "title": rabbitData[currentURl]["title"],
-                "favIcon": rabbitData[currentURl]["favIcon"]
-            });
+            if(rabbitData["entry"]){
+                path.push({
+                    "url": currentURl,
+                    "title": rabbitData[currentURl]["title"],
+                    "favIcon": rabbitData[currentURl]["favIcon"]
+                });
+            }
+           
 
 
         }

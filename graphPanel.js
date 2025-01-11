@@ -1,135 +1,130 @@
-// document.addEventListener("DOMContentLoaded", () => {
-//     // Initialize an empty rabbitData object
-//     const rabbitData = {
-//       curr: null,
-//       entry: null,
-//     };
-  
-//     // Function to create a node element for the graph
-//     const createNodeElement = (data) => {
-//       const node = document.createElement("div");
-//       node.className = "node";
-  
-//       // Create a favicon image element for the node
-//       const favicon = document.createElement("img");
-//       favicon.src = data.favIcon || "https://via.placeholder.com/50";
-//       favicon.alt = "Favicon";
-  
-//       // Create a title element for the node (first three words)
-//       const title = document.createElement("p");
-//       const truncatedTitle = data.title ? data.title.split(" ").slice(0, 3).join(" ") : "Untitled";
-//       title.textContent = truncatedTitle;
-  
-//       node.appendChild(favicon);
-//       node.appendChild(title);
-  
-//       return node;
-//     };
-  
-//     let offsetX = 0, offsetY = 0, isDragging = false;
-  
-//     // Function to enable dragging for the graph-container
-//     const enableDrag = (e) => {
-//       isDragging = true;
-//       offsetX = e.clientX - graphContainer.offsetLeft;
-//       offsetY = e.clientY - graphContainer.offsetTop;
-//     };
-  
-//     const handleDragging = (e) => {
-//       if (!isDragging) return;
-//       graphContainer.style.left = `${e.clientX - offsetX}px`;
-//       graphContainer.style.top = `${e.clientY - offsetY}px`;
-//     };
-  
-//     const stopDrag = () => {
-//       isDragging = false;
-//     };
-  
-//     // Select the graph container
-//     const graphContainer = document.getElementById("graphContainer");
-//     graphContainer.addEventListener("mousedown", enableDrag);
-//     document.addEventListener("mousemove", handleDragging);
-//     document.addEventListener("mouseup", stopDrag);
-  
-//     // Function to create a connection (link) between nodes
-//     const createConnectionElement = () => {
-//       const connection = document.createElement("div");
-//       connection.className = "connection";
-//       return connection;
-//     };
-  
-//     // Function to render the graph from rabbitData
-//     const renderGraph = () => {
-//       const graphDiv = document.getElementById("graph");
-//       graphDiv.innerHTML = ""; // Clear the container before re-rendering
-  
-//       let current = rabbitData.entry;
-//       while (current) {
-//         // Add the current node
-//         const nodeElement = createNodeElement(current);
-//         graphDiv.appendChild(nodeElement);
-  
-//         // Positioning each node with random values
-//         const randomX = Math.floor(Math.random() * (graphDiv.clientWidth - 120));
-//         const randomY = Math.floor(Math.random() * (graphDiv.clientHeight - 120));
-//         nodeElement.style.left = `${randomX}px`;
-//         nodeElement.style.top = `${randomY}px`;
-  
-//         // Add connections for each 'next' node in the list
-//         if (current.next && current.next.length > 0) {
-//           current.next.forEach((nextNode) => {
-//             const connection = createConnectionElement();
-//             graphDiv.appendChild(connection);
-//             const nextNodeElement = createNodeElement(nextNode);
-//             graphDiv.appendChild(nextNodeElement);
-//           });
-//         }
-  
-//         // Move to the next node (if any)
-//         current = current.next && current.next.length > 0 ? current.next[0] : null;
-//       }
-//     };
-  
-//     // Function to add a new entry to rabbitData
-//     const addEntry = (url, title, favIconUrl, prevNode = null) => {
-//       const newNode = {
-//         method: "search: ",
-//         prev: prevNode || rabbitData.curr,
-//         next: [],
-//         title: title,
-//         favIcon: favIconUrl,
-//       };
-  
-//       if (prevNode) {
-//         prevNode.next.push(newNode); // Link the new node to the previous node
-//       } else if (rabbitData.curr) {
-//         rabbitData.curr.next.push(newNode); // Link the new node to the current node
-//       }
-  
-//       rabbitData.curr = newNode; // Set the new node as the current node
-  
-//       if (!rabbitData.entry) {
-//         rabbitData.entry = newNode; // Set the first entry if it's the first node
-//       }
-  
-//       renderGraph(); // Re-render the graph with the new node
-//     };
-  
-//     // Example of adding entries to simulate dynamic data
-//     setTimeout(() => {
-//       addEntry("https://example.com", "Example Site", "https://www.google.com/favicon.ico");
-//     }, 1000);
-  
-//     setTimeout(() => {
-//       addEntry("https://another-site.com", "Another Site Example", "https://www.google.com/favicon.ico");
-//     }, 3000);
-  
-//     setTimeout(() => {
-//       addEntry("https://yetanother.com", "Yet Another Site Example", "https://www.google.com/favicon.ico");
-//     }, 5000);
-  
-//     setTimeout(() => {
-//       addEntry("https://linked-site.com", "Linked Site Example", "https://www.google.com/favicon.ico", rabbitData.entry);
-//     }, 7000);
-//   });
-  
+/*
+    Javascript for the Graph Side Panel
+
+    Works closely with active service workers to recieve latest data to display
+
+    Conducts DFS Traversal to apply nodes to a Tree Map
+*/
+
+document.addEventListener("DOMContentLoaded", () => {
+    const treeContainer = document.getElementById("tree-container");
+
+    chrome.runtime.sendMessage("panel_data", (response) => { 
+        const entryURL = response["fullGraph"]["entry"];
+
+        console.log(response["fullGraph"]);
+
+        if(entryURL == null){
+            //Display Instructions on how to use extension
+        }
+
+        // Setup Current Node
+        var curr = response["fullGraph"][entryURL];
+
+        // Root node
+        const rootNode = createTreeNode(curr["title"]);
+        treeContainer.appendChild(rootNode);
+
+        // Entrance to DFS
+        const entryLength = curr["next"].length;
+        var childToParent = {}
+        var count = 0;
+
+        //Insert into dictionary for easy retrieval from document order
+        childToParent[entryURL] = count;
+        count = count + 1;
+
+        for(let i = 0; i < entryLength; i++){
+            dfs(response["fullGraph"][curr["next"][i]], curr["next"][i]);
+        }
+
+        //----------------------------------------------------
+        // Depth First Search Traversal
+        // 
+        // Insert data visually through DFS Traversal
+        //
+        // Called within chrome.runtime for panel_data message
+        //----------------------------------------------------
+        function dfs(node, url){
+            /*
+            Node is in format - 
+            favIcon: iconURL
+            
+            method: methodURL
+            next: list of strings
+            prev: prevURL string
+            title: string
+            */
+
+            const newNode = createTreeNode(node["title"], node["title"]);
+            const parentNodes = treeContainer.querySelectorAll(".tree-node");
+
+            // Append the new node to a random existing node
+            const parentNode = parentNodes[childToParent[node["prev"]]];
+            const childContainer =  parentNode.querySelector(".children") || createChildContainer(parentNode);
+
+            childContainer.appendChild(newNode);
+
+            //Insert into dictionary for easy retrieval from document order
+            childToParent[url] = count;
+            count = count + 1;
+
+            // Continue DFS
+            if(node["next"]){
+                const entryLength = node["next"].length;
+
+                for(let i = 0; i < entryLength; i++){
+                    dfs(response["fullGraph"][node["next"][i]], node["next"][i]);
+                }
+
+            }
+
+            return;
+            
+        }
+
+    });
+
+    
+
+    //--------------------
+    // Simulated Insertion
+    //
+    // Used in tutorial?
+    //--------------------
+    function simulate(){
+        // Simulate data being added every 2 seconds
+        let nodeCount = 1;
+        setInterval(() => {
+            const newNode = createTreeNode(`Node ${nodeCount}`, `This is the full title of Node ${nodeCount}`);
+            const parentNodes = treeContainer.querySelectorAll(".tree-node");
+
+            // Append the new node to a random existing node
+            const randomParent = parentNodes[Math.floor(Math.random() * parentNodes.length)];
+            const childContainer = randomParent.querySelector(".children") || createChildContainer(randomParent);
+            childContainer.appendChild(newNode);
+
+            nodeCount++;
+        }, 2000);
+    }
+
+    // Function to create a tree node
+    function createTreeNode(title, fullTitle = title) {
+        const node = document.createElement("div");
+        node.className = "tree-node";
+        node.textContent = title;
+        node.setAttribute("data-full-title", fullTitle);
+        return node;
+    }
+
+    // Function to create a child container for a node
+    function createChildContainer(parentNode) {
+        const container = document.createElement("div");
+        container.className = "children";
+        container.style.display = "flex";
+        container.style.flexDirection = "column";
+        container.style.marginLeft = "20px";
+        parentNode.appendChild(container);
+        return container;
+    }
+});
