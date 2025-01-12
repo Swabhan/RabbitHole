@@ -145,12 +145,14 @@ document.addEventListener("DOMContentLoaded", () => {
             //Send chosen rabbit hole, refreshes with relevant data
             chrome.runtime.sendMessage(
                 { action: "updateRabbit", rabbit: pageSelector.value },
-                (response) => {}
+                (response) => {
+                  location.reload();
+                  return false;
+                }
             );
-
-            location.reload();
-            return false;
         }
+
+        
 
         
         

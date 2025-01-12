@@ -297,8 +297,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //Add new rabbit, will be present and selectable on dropdown in panel.html
     else if (message.action === 'addNew') {
         chrome.storage.local.get(["rabbit"]).then((result) => {
-            console.log(result);
-
             //Update Result
             result.rabbit.holes.push(message.rabbit);
             result.rabbit.curr = message.rabbit;
@@ -313,16 +311,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //If different rabbit is selected, update current
     else if (message.action === 'updateRabbit') {
         chrome.storage.local.get(["rabbit"]).then((result) => {
-            console.log(result);
-
             //Update Result
             result.rabbit.curr = message.rabbit;
 
             chrome.storage.local.set(result);
             setupRabbit();
         });
-
-        setupRabbit();
 
         sendResponse({ success: true });
     }
@@ -333,6 +327,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.storage.local.get([rabbitName, "rabbit"]).then((result) => {
 
                 let rabbitData = result[rabbitName]  || {"curr": null};
+                console.log(rabbitData);
                 sendResponse({"fullGraph": rabbitData, "path": currPath, "rabbitName": rabbitName, "holes": result["rabbit"]["holes"]});
             });
         });
@@ -372,6 +367,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     }
 
+    else if (message === 'collab') {
+        chrome.sidePanel.setOptions({
+            path: 'collab.html',
+        });
+    }
+
+    else if (message === 'explore') {
+        chrome.sidePanel.setOptions({
+            path: 'explore.html',
+        });
+    }
+    else if (message === 'info') {
+        chrome.sidePanel.setOptions({
+            path: 'info.html',
+        });
+    }
     
 
     return true;

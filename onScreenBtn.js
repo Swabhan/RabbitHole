@@ -238,7 +238,7 @@ btnGraph.onmouseout = function () {
 
 
 // Creating the tabs btn
-var btnTab = document.createElement("BUTTON");
+btnTab = document.createElement("BUTTON");
 btnTab.id = "tabs";
 
 // Create the SVG icon
@@ -279,6 +279,93 @@ btnTab.onmouseout = function () {
     btnTab.style.backgroundColor = "#34A853";
 };
 
+// Creating the Explore Button
+var btnExplore = document.createElement("BUTTON");
+btnExplore.id = "explore";
+
+// Create the SVG icon
+var svgNS = "http://www.w3.org/2000/svg";
+var svgIcon = document.createElementNS(svgNS, "svg");
+svgIcon.setAttribute("xmlns", svgNS);
+svgIcon.setAttribute("width", "24");
+svgIcon.setAttribute("height", "24");
+svgIcon.setAttribute("fill", "currentColor");
+svgIcon.setAttribute("class", "bi bi-people-fill");
+svgIcon.setAttribute("viewBox", "0 0 16 16");
+
+var path1 = document.createElementNS(svgNS, "path");
+path1.setAttribute("fill-rule", "evenodd");
+path1.setAttribute("d", "M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855A8 8 0 0 0 5.145 4H7.5zM4.09 4a9.3 9.3 0 0 1 .64-1.539 7 7 0 0 1 .597-.933A7.03 7.03 0 0 0 2.255 4zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a7 7 0 0 0-.656 2.5zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5zM8.5 5v2.5h2.99a12.5 12.5 0 0 0-.337-2.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5zM5.145 12q.208.58.468 1.068c.552 1.035 1.218 1.65 1.887 1.855V12zm.182 2.472a7 7 0 0 1-.597-.933A9.3 9.3 0 0 1 4.09 12H2.255a7 7 0 0 0 3.072 2.472M3.82 11a13.7 13.7 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5zm6.853 3.472A7 7 0 0 0 13.745 12H11.91a9.3 9.3 0 0 1-.64 1.539 7 7 0 0 1-.597.933M8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855q.26-.487.468-1.068zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.7 13.7 0 0 1-.312 2.5m2.802-3.5a7 7 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7 7 0 0 0-3.072-2.472c.218.284.418.598.597.933M10.855 4a8 8 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4z");
+
+svgIcon.appendChild(path1);
+btnExplore.appendChild(svgIcon);
+
+btnExplore.style.width = "50px";
+btnExplore.style.height = "50px";
+btnExplore.style.border = "none";
+btnExplore.style.borderRadius = "5px";
+btnExplore.style.backgroundColor = "#34A853";
+btnExplore.style.color = "#fff";
+btnExplore.style.fontSize = "24px";
+btnExplore.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+btnExplore.style.cursor = "pointer";
+btnExplore.style.marginTop = "10px";
+btnExplore.style.alignItems = "center";
+btnExplore.style.justifyContent = "center";
+
+// Adding hover effect to the Plus button
+btnExplore.onmouseover = function () {
+    btnExplore.style.backgroundColor = "#2c8c42";
+};
+btnExplore.onmouseout = function () {
+    btnExplore.style.backgroundColor = "#34A853";
+};
+
+
+//Info Button
+var btnInfo = document.createElement("BUTTON");
+btnInfo.id = "info";
+
+// Create the SVG icon
+var svgNS = "http://www.w3.org/2000/svg";
+var svgIcon = document.createElementNS(svgNS, "svg");
+svgIcon.setAttribute("xmlns", svgNS);
+svgIcon.setAttribute("width", "24");
+svgIcon.setAttribute("height", "24");
+svgIcon.setAttribute("fill", "currentColor");
+svgIcon.setAttribute("class", "bi bi-people-fill");
+svgIcon.setAttribute("viewBox", "0 0 16 16");
+
+var path1 = document.createElementNS(svgNS, "path");
+path1.setAttribute("fill-rule", "evenodd");
+path1.setAttribute("d", "M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2");
+
+svgIcon.appendChild(path1);
+btnInfo.appendChild(svgIcon);
+
+btnInfo.style.width = "50px";
+btnInfo.style.height = "50px";
+btnInfo.style.border = "none";
+btnInfo.style.borderRadius = "5px";
+btnInfo.style.backgroundColor = "#34A853";
+btnInfo.style.color = "#fff";
+btnInfo.style.fontSize = "24px";
+btnInfo.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+btnInfo.style.cursor = "pointer";
+btnInfo.style.marginTop = "10px";
+btnInfo.style.alignItems = "center";
+btnInfo.style.justifyContent = "center";
+
+// Adding hover effect to the Plus button
+btnInfo.onmouseover = function () {
+    btnInfo.style.backgroundColor = "#2c8c42";
+};
+btnInfo.onmouseout = function () {
+    btnInfo.style.backgroundColor = "#34A853";
+};
+
+
+
 //Set digButton functionality
 chrome.runtime.sendMessage("contains", (response) => {
     //If rabbit hole contains url, set button to checked, otherwise +
@@ -306,6 +393,8 @@ function toggleWrap() {
     btnContainer.appendChild(btnGraph);
     btnContainer.appendChild(btnGroup);
     btnContainer.appendChild(btnTab);
+    btnContainer.appendChild(btnExplore);
+    btnContainer.appendChild(btnInfo);
     
     chrome.runtime.sendMessage("toggle_panel", () => {});
 }
@@ -327,6 +416,21 @@ function digWrap() {
 
 }
 
+function groupWrap() {
+    chrome.runtime.sendMessage("collab", () => {});
+
+}
+
+function exploreWrap() {
+    chrome.runtime.sendMessage("explore", () => {});
+
+}
+
+function infoWrap() {
+    chrome.runtime.sendMessage("info", () => {});
+
+}
+
 function graphWrap() {
     //Executes "graphPanel" message in service.js, opens graphPanel.html
     chrome.runtime.sendMessage("graphPanel", () => {});
@@ -340,3 +444,12 @@ btnPlus.addEventListener("click", digWrap);
 
 // When graph button is clicked, open graph page in side panel
 btnGraph.addEventListener("click", graphWrap);
+
+// When group button is clicked, open group page in side panel
+btnGroup.addEventListener("click", groupWrap);
+
+// When explore button is clicked, open explore page in side panel
+btnExplore.addEventListener("click", exploreWrap);
+
+// When info button is clicked, open info page in side panel
+btnInfo.addEventListener("click", infoWrap);

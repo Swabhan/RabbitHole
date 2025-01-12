@@ -48,3 +48,17 @@ body {
   opacity: 1;
   visibility: visible;
 }
+
+.drag-handle {
+  width: 4px;
+  height: 4px;
+  background-color: #ffc6c6;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  cursor: grab;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}

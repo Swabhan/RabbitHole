@@ -6,13 +6,14 @@
     Conducts DFS Traversal to apply nodes to a Tree Map
 */
 
+var childToParent = {}
+var count = 0;
+
 document.addEventListener("DOMContentLoaded", () => {
     const treeContainer = document.getElementById("tree-container");
 
     chrome.runtime.sendMessage("panel_data", (response) => { 
         const entryURL = response["fullGraph"]["entry"];
-
-        console.log(response["fullGraph"]);
 
         if(entryURL == null){
             //Display Instructions on how to use extension
@@ -21,21 +22,21 @@ document.addEventListener("DOMContentLoaded", () => {
         // Setup Current Node
         var curr = response["fullGraph"][entryURL];
 
-        // Root node
-        const rootNode = createTreeNode(curr["title"]);
-        treeContainer.appendChild(rootNode);
+        if(curr){
+            // Root node
+            const rootNode = createTreeNode(curr["title"]);
+            treeContainer.appendChild(rootNode);
 
-        // Entrance to DFS
-        const entryLength = curr["next"].length;
-        var childToParent = {}
-        var count = 0;
+            // Entrance to DFS
+            const entryLength = curr["next"].length;
 
-        //Insert into dictionary for easy retrieval from document order
-        childToParent[entryURL] = count;
-        count = count + 1;
+            //Insert into dictionary for easy retrieval from document order
+            childToParent[entryURL] = count;
+            count = count + 1;
 
-        for(let i = 0; i < entryLength; i++){
-            dfs(response["fullGraph"][curr["next"][i]], curr["next"][i]);
+            for(let i = 0; i < entryLength; i++){
+                dfs(response["fullGraph"][curr["next"][i]], curr["next"][i]);
+            }
         }
 
         //----------------------------------------------------
@@ -87,6 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     
 
+    
+
     //--------------------
     // Simulated Insertion
     //
@@ -114,6 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
         node.className = "tree-node";
         node.textContent = title;
         node.setAttribute("data-full-title", fullTitle);
+
+        const drag = document.createElement("div");
+        drag.className = "drag-handle";
+        node.appendChild(drag);
+
         return node;
     }
 
@@ -127,4 +135,36 @@ document.addEventListener("DOMContentLoaded", () => {
         parentNode.appendChild(container);
         return container;
     }
+
+
+    //Dragging functionality
+    let isDragging = false;
+    let currentNode = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    document.addEventListener('mousedown', (event) => {
+        if (event.target.classList.contains('drag-handle')) {
+            isDragging = true;
+            currentNode = event.target.parentElement;
+            const rect = currentNode.getBoundingClientRect();
+            offsetX = rect.right;
+            offsetY = rect.top;
+        }
+    });
+
+    document.addEventListener('mousemove', (event) => {
+        if (isDragging && currentNode) {
+            currentNode.style.position = 'absolute';
+            currentNode.style.left = `${event.clientX - offsetX}px`;
+            currentNode.style.top = `${event.clientY - offsetY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        currentNode = null;
+        
+        location.reload();
+    });
 });
