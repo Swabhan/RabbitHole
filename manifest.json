@@ -30,10 +30,7 @@
     "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["third_party/jquery-3.7.1.js", "onScreenBtn.js", "panel.js"],
-      "exclude_matches": [
-            "https://google.com/*"
-        ]
+      "js": ["third_party/jquery-3.7.1.js", "onScreenBtn.js", "panel.js"]
     }
 
     

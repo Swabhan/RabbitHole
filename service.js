@@ -30,10 +30,14 @@ async function getRabbitName(){
 async function setupRabbit(){
     rabbitName = await getRabbitName();
 
-    await chrome.storage.local.get([rabbitName]).then((result) => 
+    await chrome.storage.local.get([rabbitName, "Tabs"]).then((result) => 
     {
         if (!result[rabbitName]) {
             chrome.storage.local.set({ [rabbitName]: { "curr": null, "entry": null } });
+        }
+
+        if (!result["Tabs"]) {
+            chrome.storage.local.set({ ["Tabs"]: {} });
         }
         
     }).catch((error) => {
@@ -238,6 +242,20 @@ async function BuildPath(url, title, favIconUrl){
 }
 
 //---------------
+//Tab Management
+//---------------
+async function saveTabs(name, tabs){
+    await chrome.storage.local.get(["Tabs"]).then((result) => {
+        result["Tabs"][name] = tabs;
+
+        console.log(tabs);
+
+        console.log(result["Tabs"])
+        chrome.storage.local.set({ ["Tabs"]: result});
+    });
+}
+
+//---------------
 //Event Listeners
 //---------------
 
@@ -346,6 +364,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     }
 
+    //Add to saved tabs
+    else if (message.action === 'nameTabs') {
+        saveTabs(message.name, message.tabs)
+    }
+
     //If "+" is clicked, dig functionality
     else if (message === 'dig') {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
@@ -377,6 +400,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             path: 'explore.html',
         });
     }
+
     else if (message === 'info') {
         chrome.sidePanel.setOptions({
             path: 'info.html',

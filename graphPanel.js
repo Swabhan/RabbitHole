@@ -9,9 +9,22 @@
 var childToParent = {}
 var count = 0;
 
+//Tabbing Functionality
 var tabURLs = new Set([]);;
 var isHovered = null;
 var isShifted = false;
+
+//Moving Functionality
+let isDragging = false;
+let currentNode = null;
+
+document.addEventListener('mousedown', (event) => {
+    if (event.target.classList.contains('drag-handle')) {
+        isDragging = true;
+        currentNode = event.target.parentElement;
+        currentNode.style.backgroundColor = "#b8ffed";
+    }
+});
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -91,10 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    
-
-    
-
     //--------------------
     // Simulated Insertion
     //
@@ -151,84 +160,137 @@ document.addEventListener("DOMContentLoaded", () => {
         return container;
     }
 
-    // Add functionality for links, for dbl + single clicks
-    function clickFunctionality(link, node){
-        
-        node.addEventListener("mouseover", () => {
-            isHovered = link.href;
+    function clickFunctionality(link, node) {
+        //When Hovering
+        node.addEventListener("mouseover", (event) => {
+            const elementsAtPoint = document.elementsFromPoint(event.clientX, event.clientY);
+            if (elementsAtPoint[0] === node) {
+                isHovered = link.href;
+                if(isDragging && currentNode){
+                    node.appendChild(currentNode);
+                }
+            }
         });
 
-        node.addEventListener("mouseout", () => {
-            isHovered = null;
+        //When Hovering is removed
+        node.addEventListener("mouseout", (event) => {
+            const elementsAtPoint = document.elementsFromPoint(event.clientX, event.clientY);
+            if (elementsAtPoint[0] === node) {
+                isHovered = null;
+                if(isDragging){
+                    node.removeChild(currentNode);
+                }
+            }
         });
-
+    
         // Allow navigation for double click only
         node.addEventListener("dblclick", (event) => {
             event.preventDefault();
-            window.open(link.href, link.target);
+            const elementsAtPoint = document.elementsFromPoint(event.clientX, event.clientY);
+            if (elementsAtPoint[0] === node) {
+                window.open(link.href, link.target);
+            }
         });
-
+    
+        //Single click, various functionality depending on configuration
         node.addEventListener("click", (event) => {
             event.preventDefault();
-
-            if(isShifted && isHovered){
+            
+            // Check if this is the topmost element
+            const elementsAtPoint = document.elementsFromPoint(event.clientX, event.clientY);
+            if (elementsAtPoint[0] !== node) {
+                return;
+            }
+    
+            //Reset Dragging Functionality
+            if(isDragging){
+                isDragging = false;
+                currentNode = null;
+                currentNode.style.backgroundColor = "ffffff";
+            }
+    
+            if(isShifted && isHovered && !tabURLs.has(isHovered)){
                 tabURLs.add(isHovered);
                 node.style.backgroundColor = "#e0e0ff";
-            } else {
-                if(tabURLs.has(isHovered)){
-                    tabURLs.delete(isHovered);
-                    node.style.backgroundColor = "#000000";
+            } else if(tabURLs.has(isHovered) && isShifted) {
+                tabURLs.delete(isHovered);
+                node.style.backgroundColor = "#ffffff";
+            }
+    
+            //If set has content, add button to manage tabs
+            if (tabURLs.size > 0) {
+                const top = document.getElementById("top");
+                
+                if (!document.getElementById("manageTabsButton")) {
+                    const button = document.createElement("button");
+                    button.id = "manageTabsButton";
+                    button.textContent = "Save to Tabs Management";
+                    button.style.marginTop = "10px";
+                    
+                    button.addEventListener("click", () => {
+                        createPopup();
+                    });
+            
+                    top.insertAdjacentElement("afterend", button);
                 }
             }
-
         });
     }
-
-
-    //Dragging functionality
-    let isDragging = false;
-    let currentNode = null;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    document.addEventListener('mousedown', (event) => {
-        if (event.target.classList.contains('drag-handle')) {
-            isDragging = true;
-            currentNode = event.target.parentElement;
-            const rect = currentNode.getBoundingClientRect();
-            offsetX = rect.right;
-            offsetY = rect.top;
-        }
-    });
-
-    document.addEventListener('mousemove', (event) => {
-        if (isDragging && currentNode) {
-            currentNode.style.position = 'absolute';
-            currentNode.style.left = `${event.clientX - offsetX}px`;
-            currentNode.style.top = `${event.clientY - offsetY}px`;
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        if(isDragging){
-            location.reload();
-        }
-        isDragging = false;
-        currentNode = null;
-        
-        
-    });
-
+    
     // Keydown functionality for shift
     document.addEventListener("keydown", (event) => {
         if (event.shiftKey) {
             isShifted = true;
         }
     });
-
+    
+    // Set shift to false when key is up
     document.addEventListener("keyup", (event) => {
         isShifted = false;
-
     });
 
+
+    /*
+    Form for naming saved tabs
+    */
+    function createPopup() {
+        const popupContainer = document.getElementById("popup-container");
+        popupContainer.style.display = "flex";
+    
+        popupContainer.innerHTML = `
+        <div id="popup">
+            <h2>Enter name for managed tabs</h2>
+            <input type="text" id="input" placeholder="Enter a Name" />
+            <div>
+            <button id="submit-option">Submit</button>
+            <button id="cancel-option">Cancel</button>
+            </div>
+        </div>
+        `;
+    
+        document.getElementById("submit-option").addEventListener("click", () => {
+        const inputValue = document.getElementById("input").value.trim();
+        if (inputValue) {
+            //Add new rabbit hole to local storage
+            chrome.runtime.sendMessage(
+            { action: "nameTabs", name: inputValue, tabs: tabURLs},
+            (response) => {}
+            );
+        }
+        closePopup();
+    
+        });
+    
+        document.getElementById("cancel-option").addEventListener("click", closePopup);
+    }
+
+    function closePopup() {
+        const popupContainer = document.getElementById("popup-container");
+        popupContainer.style.display = "none";
+        popupContainer.innerHTML = "";
+        
+        location.reload();
+        return false;
+    }
+    
 });
