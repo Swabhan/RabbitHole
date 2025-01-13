@@ -9,6 +9,11 @@
 var childToParent = {}
 var count = 0;
 
+var tabURLs = new Set([]);;
+var isHovered = null;
+var isShifted = false;
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const treeContainer = document.getElementById("tree-container");
 
@@ -24,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if(curr){
             // Root node
-            const rootNode = createTreeNode(curr["title"]);
+            const rootNode = createTreeNode(entryURL, curr["title"]);
             treeContainer.appendChild(rootNode);
 
             // Entrance to DFS
@@ -57,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
             title: string
             */
 
-            const newNode = createTreeNode(node["title"], node["title"]);
+            const newNode = createTreeNode(url, node["title"], node["title"]);
             const parentNodes = treeContainer.querySelectorAll(".tree-node");
 
             // Append the new node to a random existing node
@@ -112,7 +117,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Function to create a tree node
-    function createTreeNode(title, fullTitle = title) {
+    function createTreeNode(url, title, fullTitle = title) {
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+
+        
+
         const node = document.createElement("div");
         node.className = "tree-node";
         node.textContent = title;
@@ -122,7 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
         drag.className = "drag-handle";
         node.appendChild(drag);
 
-        return node;
+        link.appendChild(node)
+
+        clickFunctionality(link, node);
+
+        return link;
     }
 
     // Function to create a child container for a node
@@ -134,6 +149,39 @@ document.addEventListener("DOMContentLoaded", () => {
         container.style.marginLeft = "20px";
         parentNode.appendChild(container);
         return container;
+    }
+
+    // Add functionality for links, for dbl + single clicks
+    function clickFunctionality(link, node){
+        
+        node.addEventListener("mouseover", () => {
+            isHovered = link.href;
+        });
+
+        node.addEventListener("mouseout", () => {
+            isHovered = null;
+        });
+
+        // Allow navigation for double click only
+        node.addEventListener("dblclick", (event) => {
+            event.preventDefault();
+            window.open(link.href, link.target);
+        });
+
+        node.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            if(isShifted && isHovered){
+                tabURLs.add(isHovered);
+                node.style.backgroundColor = "#e0e0ff";
+            } else {
+                if(tabURLs.has(isHovered)){
+                    tabURLs.delete(isHovered);
+                    node.style.backgroundColor = "#000000";
+                }
+            }
+
+        });
     }
 
 
@@ -162,9 +210,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.addEventListener('mouseup', () => {
+        if(isDragging){
+            location.reload();
+        }
         isDragging = false;
         currentNode = null;
         
-        location.reload();
+        
     });
+
+    // Keydown functionality for shift
+    document.addEventListener("keydown", (event) => {
+        if (event.shiftKey) {
+            isShifted = true;
+        }
+    });
+
+    document.addEventListener("keyup", (event) => {
+        isShifted = false;
+
+    });
+
 });

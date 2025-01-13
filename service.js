@@ -327,7 +327,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.storage.local.get([rabbitName, "rabbit"]).then((result) => {
 
                 let rabbitData = result[rabbitName]  || {"curr": null};
-                console.log(rabbitData);
                 sendResponse({"fullGraph": rabbitData, "path": currPath, "rabbitName": rabbitName, "holes": result["rabbit"]["holes"]});
             });
         });

@@ -24,9 +24,9 @@ body {
   position: relative;
 }
 
-.tree-node:hover {
+/* .tree-node:hover {
   background-color: #e0e0ff;
-}
+} */
 
 .tree-node::after {
   content: attr(data-full-title);
