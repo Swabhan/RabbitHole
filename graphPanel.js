@@ -167,7 +167,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (elementsAtPoint[0] === node) {
                 isHovered = link.href;
                 if(isDragging && currentNode){
-                    node.appendChild(currentNode);
+                    if(node != currentNode){
+                        node.style.backgroundColor = "#fff1cc";
+                    }
+                    
+
+                    //Potential feature, add to container upon hover when dragging
+                    // node.appendChild(currentNode);
                 }
             }
         });
@@ -177,10 +183,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const elementsAtPoint = document.elementsFromPoint(event.clientX, event.clientY);
             if (elementsAtPoint[0] === node) {
                 isHovered = null;
-                if(isDragging){
-                    node.removeChild(currentNode);
-                }
+                
+
+                //Potential Feature
+                // node.removeChild(currentNode);
             }
+
+            //reset color
+            if(node != currentNode){
+                node.style.backgroundColor = "#ffffff";
+            }
+
         });
     
         // Allow navigation for double click only
@@ -205,8 +218,13 @@ document.addEventListener("DOMContentLoaded", () => {
             //Reset Dragging Functionality
             if(isDragging){
                 isDragging = false;
+                if(node.style.backgroundColor != "#fff1cc"){
+                    node.appendChild(currentNode);
+                }
+                currentNode.style.backgroundColor = "#ffffff";
+                
+
                 currentNode = null;
-                currentNode.style.backgroundColor = "ffffff";
             }
     
             if(isShifted && isHovered && !tabURLs.has(isHovered)){
