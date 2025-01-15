@@ -75,11 +75,16 @@ document.addEventListener("DOMContentLoaded", () => {
             title: string
             */
 
+            console.log(node);
+            
             const newNode = createTreeNode(url, node["title"], node["title"]);
             const parentNodes = treeContainer.querySelectorAll(".tree-node");
 
             // Append the new node to a random existing node
             const parentNode = parentNodes[childToParent[node["prev"]]];
+            console.log(parentNodes, childToParent[node["prev"]])
+
+            console.log(parentNode)
             const childContainer =  parentNode.querySelector(".children") || createChildContainer(parentNode);
 
             childContainer.appendChild(newNode);
@@ -136,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const node = document.createElement("div");
         node.className = "tree-node";
         node.textContent = title;
+        node.href = url;
         node.setAttribute("data-full-title", fullTitle);
 
         const drag = document.createElement("div");
@@ -222,6 +228,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     node.appendChild(currentNode);
                 }
                 currentNode.style.backgroundColor = "#ffffff";
+
+                chrome.runtime.sendMessage(
+                    { action: "switchNode", nodeToAdd: node.href, nodeToMove: currentNode.href },
+                    (response) => {}
+                );
                 
 
                 currentNode = null;
@@ -310,5 +321,28 @@ document.addEventListener("DOMContentLoaded", () => {
         location.reload();
         return false;
     }
+
+
+    //How To Button
+    // Get references to elements
+    const howToButton = document.getElementById('how-to-button');
+    const popupContainer = document.getElementById('popup-container-info');
+    const backgroundFade = document.getElementById('background-fade');
+    const closePopupButton = document.getElementById('close-popup');
+
+    // Show popup and fade background
+    howToButton.addEventListener('click', () => {
+        backgroundFade.style.display = 'block';
+        popupContainer.style.display = 'block';
+    });
+
+    // Hide popup and fade background
+    const hidePopup = () => {
+        backgroundFade.style.display = 'none';
+        popupContainer.style.display = 'none';
+    };
+
+    closePopupButton.addEventListener('click', hidePopup);
+    backgroundFade.addEventListener('click', hidePopup);
     
 });

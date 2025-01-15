@@ -137,7 +137,21 @@ async function deleteRabbitHole(url){
                 rabbitData[url]["next"] = null
             }
         }
+
+        //Delete from prev's next
+        if(rabbitData[url]["prev"]){
+            var previous = rabbitData[url]["prev"];
+
+            const index = rabbitData[previous]["next"].indexOf(url);
+            if (index > -1) {
+                console.log(rabbitData[previous]["next"], index);
+                rabbitData[previous]["next"].splice(index, 1);
+                console.log(rabbitData[previous]["next"], index);
+            }
         
+        }
+        
+        //Delete from dictionary
         delete rabbitData[url];
         rabbitData["curr"] = prev;
 
@@ -239,6 +253,51 @@ async function BuildPath(url, title, favIconUrl){
     });
 
     return path;
+}
+
+//-------------------------------------------------------
+//Update memory when node is placed within another node
+//-------------------------------------------------------
+async function switchNode(urlToAdd, urlToMove){
+    rabbitName = await setupRabbit();
+    var tempStore = {};
+
+    //Recieve data to update
+    await chrome.storage.local.get([rabbitName]).then(async (result) => {
+        let rabbitData = result[rabbitName] || {"curr": null};
+
+        tempStore = structuredClone(rabbitData[urlToMove]);
+        await deleteRabbitHole(urlToMove);
+
+        
+    });
+
+    //Re-recieve data to update after deletion
+    await chrome.storage.local.get([rabbitName]).then(async (result) => {
+        let rabbitData = result[rabbitName] || {"curr": null};
+        console.log(tempStore);
+        
+        tempStore["prev"] = urlToAdd;
+
+        if(!rabbitData[urlToAdd]["next"]){
+            rabbitData[urlToAdd]["next"] = [];
+        }
+    
+        rabbitData[urlToAdd]["next"].push(urlToMove)
+        rabbitData[urlToMove] = tempStore;
+    
+        console.log(rabbitData)
+    
+    
+    
+        chrome.storage.local.set({ [rabbitName]: rabbitData });
+        
+    });
+
+   
+
+
+
 }
 
 //---------------
@@ -367,6 +426,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //Add to saved tabs
     else if (message.action === 'nameTabs') {
         saveTabs(message.name, message.tabs)
+    }
+
+    //When node is placed in another node, update memory
+    else if (message.action === 'switchNode') {
+        switchNode(message.nodeToAdd, message.nodeToMove);
     }
 
     //If "+" is clicked, dig functionality
