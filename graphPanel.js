@@ -75,7 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
             title: string
             */
 
-            console.log(node);
+            if(node == undefined){
+                return;
+            }
             
             const newNode = createTreeNode(url, node["title"], node["title"]);
             const parentNodes = treeContainer.querySelectorAll(".tree-node");

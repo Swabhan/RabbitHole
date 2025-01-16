@@ -267,15 +267,21 @@ async function switchNode(urlToAdd, urlToMove){
         let rabbitData = result[rabbitName] || {"curr": null};
 
         tempStore = structuredClone(rabbitData[urlToMove]);
-        await deleteRabbitHole(urlToMove);
-
         
-    });
+        //Delete from prev's next
+        if(rabbitData[urlToMove]["prev"]){
+            var previous = rabbitData[urlToMove]["prev"];
 
-    //Re-recieve data to update after deletion
-    await chrome.storage.local.get([rabbitName]).then(async (result) => {
-        let rabbitData = result[rabbitName] || {"curr": null};
-        console.log(tempStore);
+            const index = rabbitData[previous]["next"].indexOf(urlToMove);
+            if (index > -1) {
+                rabbitData[previous]["next"].splice(index, 1);
+                
+            }
+        
+        }
+
+        //Delete Node, will move
+        delete rabbitData[urlToMove];
         
         tempStore["prev"] = urlToAdd;
 
@@ -291,12 +297,9 @@ async function switchNode(urlToAdd, urlToMove){
     
     
         chrome.storage.local.set({ [rabbitName]: rabbitData });
+
         
     });
-
-   
-
-
 
 }
 
@@ -319,6 +322,7 @@ async function saveTabs(name, tabs){
 //---------------
 
 let currPath; //Limits to path building to one time
+let currentPage = "panel.html";
 
 //Listeners for tabs changes
 let windowId;
@@ -335,6 +339,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
         proceed = false;
         
     });
+
 });
 
 chrome.tabs.onUpdated.addListener(function (activeInfo) {
@@ -348,6 +353,7 @@ chrome.tabs.onUpdated.addListener(function (activeInfo) {
         proceed = false;
         
     });
+
 });
 
 
@@ -368,6 +374,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.sidePanel.setOptions({
                 path: 'panel.html',
             });
+
+            let currentPage = "panel.html";
         });
     }
 
@@ -451,24 +459,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.sidePanel.setOptions({
             path: 'graphPanel.html',
         });
+
+        let currentPage = "graphPanel.html";
     }
 
     else if (message === 'collab') {
         chrome.sidePanel.setOptions({
             path: 'collab.html',
         });
+
+        let currentPage = "collab.html";
     }
 
     else if (message === 'explore') {
         chrome.sidePanel.setOptions({
             path: 'explore.html',
         });
+
+        let currentPage = "explore.html";
     }
 
     else if (message === 'info') {
         chrome.sidePanel.setOptions({
             path: 'info.html',
         });
+
+        let currentPage = "info.html";
     }
     
 

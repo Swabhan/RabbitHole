@@ -137,3 +137,50 @@ select:focus {
 #popup button:hover {
   background: #0056b3;
 }
+
+
+.dropdown-container {
+  position: center;
+  width: 250px;
+}
+
+.styled-select {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #0078d7;
+  border-radius: 8px;
+  background: linear-gradient(to right, #ffffff, #f0f8ff);
+  font-size: 16px;
+  color: #333;
+  appearance: none; /* Removes default dropdown icon */
+  -webkit-appearance: none; /* For Safari */
+  position: relative;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%230078d7' stroke-width='2' d='M7 7l3 3 3-3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 10px) center;
+  background-size: 10px;
+}
+
+/* Add hover and focus effects */
+.styled-select:hover {
+  border-color: #0053a6;
+  background: linear-gradient(to right, #c5ebfc, #f0f8ff);
+}
+
+.styled-select:focus {
+  outline: none;
+  border-color: #ffffff;
+}
+
+/* Style the special "Add New" option */
+.styled-select .special-option {
+  color: #004b89;
+  background-color: #e6f7ff;
+}
+
+.styled-select,
+.styled-select .special-option {
+  transition: all 0.3s ease;
+}
