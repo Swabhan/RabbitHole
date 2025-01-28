@@ -104,6 +104,47 @@ btnPlus.onmouseout = function () {
 };
 
 
+// Creating the notes button
+var btnNotes = document.createElement("BUTTON");
+btnNotes.id = "notes";
+
+// Create the SVG icon
+var svgNS = "http://www.w3.org/2000/svg";
+var svgIcon = document.createElementNS(svgNS, "svg");
+svgIcon.setAttribute("xmlns", svgNS);
+svgIcon.setAttribute("width", "24");
+svgIcon.setAttribute("height", "24");
+svgIcon.setAttribute("fill", "currentColor");
+svgIcon.setAttribute("class", "bi bi-pen");
+svgIcon.setAttribute("viewBox", "0 0 16 16");
+
+var path1 = document.createElementNS(svgNS, "path");
+path1.setAttribute("fill-rule", "evenodd");
+path1.setAttribute("d", "m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z");
+
+svgIcon.appendChild(path1);
+btnNotes.appendChild(svgIcon);
+
+btnNotes.style.width = "50px";
+btnNotes.style.height = "50px";
+btnNotes.style.border = "none";
+btnNotes.style.borderRadius = "5px";
+btnNotes.style.backgroundColor = "#34A853";
+btnNotes.style.color = "#fff";
+btnNotes.style.fontSize = "24px";
+btnNotes.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+btnNotes.style.cursor = "pointer";
+btnNotes.style.marginTop = "10px";
+
+// Adding hover effect to the Plus button
+btnNotes.onmouseover = function () {
+    btnNotes.style.backgroundColor = "#2c8c42";
+};
+btnNotes.onmouseout = function () {
+    btnNotes.style.backgroundColor = "#34A853";
+};
+
+
 // Creating the graph button
 var btnGraph = document.createElement("BUTTON");
 btnGraph.id = "graph";
@@ -382,7 +423,8 @@ chrome.runtime.sendMessage("contains", (response) => {
 
 // Appending buttons to the container
 btnContainer.appendChild(btnPlus); // Add Plus button first
-btnContainer.appendChild(btnRabbit); // Add Rabbit button second
+btnContainer.appendChild(btnNotes); // Add Notes button second
+btnContainer.appendChild(btnRabbit); // Add Rabbit button third
 
 // Appending the container and the hover trigger to the DOM
 document.body.appendChild(hoverTrigger);
@@ -416,9 +458,22 @@ function digWrap() {
 
 }
 
+var content = "";
+
+function notesWrap() {
+    chrome.runtime.sendMessage("notes", (response) => {
+        //Send Message with conent, to be listened to by notesPanel.js
+        if(response["return"] != "false"){
+            chrome.runtime.sendMessage(
+                { action: "inputContent", content: response["return"]}
+            );
+        }
+    });
+
+}
+
 function groupWrap() {
     chrome.runtime.sendMessage("collab", () => {});
-
 }
 
 function exploreWrap() {
@@ -441,6 +496,9 @@ btnRabbit.addEventListener("click", toggleWrap);
 
 // When + button is clicked, the rabbit "digs" by adding page to our history
 btnPlus.addEventListener("click", digWrap);
+
+// When notes button is clicked, opens notes page in side panel
+btnNotes.addEventListener("click", notesWrap);
 
 // When graph button is clicked, open graph page in side panel
 btnGraph.addEventListener("click", graphWrap);

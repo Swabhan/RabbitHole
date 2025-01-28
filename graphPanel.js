@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             //reset color
-            if(node != currentNode){
+            if(node != currentNode && !tabURLs.contains(node.href)){
                 node.style.backgroundColor = "#ffffff";
             }
 

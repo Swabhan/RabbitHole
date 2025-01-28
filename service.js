@@ -375,7 +375,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 path: 'panel.html',
             });
 
-            let currentPage = "panel.html";
+            currentPage = "panel.html";
         });
     }
 
@@ -392,6 +392,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         sendResponse({ success: true });
     }
+
+    //Store notes, should happen every few seconds
+    else if (message.action === 'takeNote') {
+        chrome.storage.local.get([rabbitName]).then((result) => {
+            let rabbitURL = result[rabbitName]["curr"]
+            
+            //Update Result
+            result[rabbitName][rabbitURL]["Content"] = message.content;
+
+            chrome.storage.local.set(result);
+        });
+
+        sendResponse({ success: true });
+    }
+
 
     //If different rabbit is selected, update current
     else if (message.action === 'updateRabbit') {
@@ -460,7 +475,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             path: 'graphPanel.html',
         });
 
-        let currentPage = "graphPanel.html";
+        currentPage = "graphPanel.html";
     }
 
     else if (message === 'collab') {
@@ -468,7 +483,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             path: 'collab.html',
         });
 
-        let currentPage = "collab.html";
+        currentPage = "collab.html";
     }
 
     else if (message === 'explore') {
@@ -476,7 +491,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             path: 'explore.html',
         });
 
-        let currentPage = "explore.html";
+        currentPage = "explore.html";
     }
 
     else if (message === 'info') {
@@ -484,7 +499,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             path: 'info.html',
         });
 
-        let currentPage = "info.html";
+        currentPage = "info.html";
+    }
+
+    else if (message === 'notes') {
+        chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+            //Send back content to add to text editor
+            chrome.storage.local.get([rabbitName]).then((result) => {
+                let rabbitData = result[rabbitName] || {"curr": null};
+                if(tabs[0].url in rabbitData && ("Content" in rabbitData[tabs[0].url])){
+                    sendResponse({"return": rabbitData[tabs[0].url]["Content"]});
+                } else {
+                    sendResponse({"return": "false"});
+                }
+            });
+
+            chrome.sidePanel.open({ tabId: tabs[0].id });
+
+            chrome.sidePanel.setOptions({
+                path: 'notesPanel.html',
+            });
+    
+            currentPage = "notesPanel.html";
+        });
+        
     }
     
 
