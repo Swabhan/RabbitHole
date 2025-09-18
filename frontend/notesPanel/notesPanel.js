@@ -1,12 +1,13 @@
 const editor = document.getElementById("editor");
 
-var content = ""
+var content = editor.textContent;
 
 //Recieves messages from runtime
 chrome.runtime.onMessage.addListener((message) => {
   //If content is present, add to text editor
   if(message.action == "inputContent"){
       content = message.content;
+      editor.textContent = content;
   }
 });
 
@@ -17,13 +18,12 @@ editor.addEventListener("keydown", (e) => {
     }
   });
   
-  // Handle Enter key for a custom "return" behavior
-  editor.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-    //   e.preventDefault();
-      insertTextAtCaret("\n");
-    }
-  });
+editor.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+  //   e.preventDefault();
+    insertTextAtCaret("\n");
+  }
+});
   
 
   function insertTextAtCaret(text) {
@@ -36,23 +36,6 @@ editor.addEventListener("keydown", (e) => {
     selection.removeAllRanges();
     selection.addRange(range);
   }
-
-editor.addEventListener("focus", () => {
-  if (editor.textContent === "Take Notes Here...") {
-    editor.textContent = content || "Take Notes Here...";
-  }
-});
-
-editor.addEventListener("blur", () => {
-  if (!editor.textContent.trim()) {
-    editor.textContent = content || "Take Notes Here...";
-  }
-});
-
-// Initialize editor placeholder
-if (!editor.textContent.trim()) {
-    editor.textContent = content || "Take Notes Here...";
-}
 
 // Every 1.5 seconds, update within local db
 const intervalId = setInterval(() => {

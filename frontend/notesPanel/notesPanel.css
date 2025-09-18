@@ -48,10 +48,10 @@
     overflow-y: auto;
   }
   
-  /* Placeholder text */
+  /* Placeholder text
   #editor:empty:before {
     content: "Take Notes Here...";
     color: #999;
     font-style: italic;
   }
-  
+   */

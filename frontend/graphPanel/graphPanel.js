@@ -138,8 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
         link.href = url;
         link.target = "_blank";
 
-        
-
         const node = document.createElement("div");
         node.className = "tree-node";
         node.textContent = title;

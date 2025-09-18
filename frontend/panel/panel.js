@@ -151,10 +151,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             );
         }
-
-        
-
-        
         
     });
 });

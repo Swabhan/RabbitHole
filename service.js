@@ -372,10 +372,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.sidePanel.open({ tabId: tabs[0].id });
 
             chrome.sidePanel.setOptions({
-                path: 'panel.html',
+                path: '/frontend/panel/panel.html',
             });
 
-            currentPage = "panel.html";
+            currentPage = "/frontend/panel/panel.html";
         });
     }
 
@@ -472,40 +472,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     else if (message === 'graphPanel') {
         chrome.sidePanel.setOptions({
-            path: 'graphPanel.html',
+            path: '/frontend/graphPanel/graphPanel.html',
         });
 
-        currentPage = "graphPanel.html";
+        currentPage = "/frontend/graphPanel/graphPanel.html";
     }
 
     else if (message === 'collab') {
         chrome.sidePanel.setOptions({
-            path: 'collab.html',
+            path: '/frontend/collab/collab.html',
         });
 
-        currentPage = "collab.html";
+        currentPage = "/frontend/collab/collab.html";
     }
 
     else if (message === 'explore') {
         chrome.sidePanel.setOptions({
-            path: 'explore.html',
+            path: '/frontend/explore/explore.html',
         });
 
-        currentPage = "explore.html";
+        currentPage = "/frontend/explore/explore.html";
     }
 
     else if (message === 'info') {
         chrome.sidePanel.setOptions({
-            path: 'info.html',
+            path: '/frontend/info/info.html',
         });
 
-        currentPage = "info.html";
+        currentPage = "/frontend/info/info.html";
     }
 
     else if (message === 'notes') {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
             //Send back content to add to text editor
             chrome.storage.local.get([rabbitName]).then((result) => {
+                
                 let rabbitData = result[rabbitName] || {"curr": null};
                 if(tabs[0].url in rabbitData && ("Content" in rabbitData[tabs[0].url])){
                     sendResponse({"return": rabbitData[tabs[0].url]["Content"]});
@@ -517,10 +518,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.sidePanel.open({ tabId: tabs[0].id });
 
             chrome.sidePanel.setOptions({
-                path: 'notesPanel.html',
+                path: '/frontend/notesPanel/notesPanel.html',
             });
     
-            currentPage = "notesPanel.html";
+            currentPage = "/frontend/notesPanel/notesPanel.html";
         });
         
     }
