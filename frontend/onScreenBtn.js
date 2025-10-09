@@ -441,6 +441,7 @@ function toggleWrap() {
     chrome.runtime.sendMessage("toggle_panel", () => {});
 }
 
+//* All wraps send message to service.js
 function digWrap() {
     //Update to checkmark on click
     const digButton = document.getElementById("dig");
@@ -470,11 +471,14 @@ function notesWrap() {
             );
         }
     });
-
 }
 
 function groupWrap() {
     chrome.runtime.sendMessage("collab", () => {});
+}
+
+function tabsWrap() {
+    chrome.runtime.sendMessage("tabs", () => {});
 }
 
 function exploreWrap() {
@@ -506,6 +510,9 @@ btnGraph.addEventListener("click", graphWrap);
 
 // When group button is clicked, open group page in side panel
 btnGroup.addEventListener("click", groupWrap);
+
+// When group button is clicked, open tabs page in side panel
+btnTab.addEventListener("click", tabsWrap);
 
 // When explore button is clicked, open explore page in side panel
 btnExplore.addEventListener("click", exploreWrap);

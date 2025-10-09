@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabs</title>
+    
+    <link rel="stylesheet" href="tabs.css">
+</head>
+<body>
+    <div>
+        <div id="popup-container" style="display: none;"></div>
+        
+        <h2>Manage Tabs</h2>
+        <ul id="dropdown">
+        <!-- Will populate via DOM in tabs.js -->
+
+        <!-- Example -->
+        <label>
+            <input type="checkbox" id="checkAll"> Select All Tabs
+        </label>
+        <div id="tabsList"></div>
+
+        <button id="save-tabs">Save</button>
+      </ul>
+
+      <h2>Open Saved Tabs</h2>
+      <center>
+        <div class="dropdown-container">
+            <select id="collection-selector" class="styled-select">
+                <option value="add-new">Select Tab Collection</option>
+            </select>
+        </div>
+      </center>
+
+
+      <ul id="dropdown">
+        <!-- Will populate via DOM in tabs.js -->
+
+        <!-- Example -->
+        <label>
+            <input type="checkbox" id="checkAllSaved"> Select All Tabs
+        </label>
+        <div id="savedTabsList"></div>
+
+        <button id="open-tabs">Open</button>
+    </ul>
+   
+        
+    </div>
+
+    <script src="tabs.js" defer></script>
+
+</body>
+</html>

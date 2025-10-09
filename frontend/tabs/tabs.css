@@ -1,0 +1,191 @@
+/* General Layout */
+body {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #e8f1ff, #ffffff);
+  margin: 0;
+  padding: 20px;
+  color: #222;
+}
+
+h2 {
+  text-align: center;
+  color: #1a1a1a;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+/* Container */
+div {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* Popup Overlay */
+#popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(35, 35, 35, 0.55);
+  display: none;
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Popup Box */
+#popup {
+  background: #fff;
+  padding: 25px 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  width: 320px;
+}
+
+#popup h2 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+#popup input {
+  width: 90%;
+  padding: 10px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+}
+
+#popup input:focus {
+  outline: none;
+  border-color: #0078d7;
+  box-shadow: 0 0 5px rgba(0, 120, 215, 0.3);
+}
+
+#popup button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #0078d7;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+#popup button:hover {
+  background: #005fa3;
+}
+
+/* Tab Lists */
+#tabsList,
+#savedTabsList {
+  margin-top: 15px;
+}
+
+#tabsList label,
+#savedTabsList label {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+
+#tabsList label:hover,
+#savedTabsList label:hover {
+  background: #f0f8ff;
+  transform: scale(1.01);
+}
+
+/* Checkboxes */
+input[type="checkbox"] {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+  accent-color: #0078d7;
+  cursor: pointer;
+}
+
+/* Links inside saved tabs */
+#savedTabsList a {
+  text-decoration: none;
+  color: #0078d7;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+#savedTabsList a:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  background: #0078d7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  display: block;
+  margin: 10px auto;
+}
+
+button:hover {
+  background: #005fa3;
+  transform: translateY(-1px);
+}
+
+/* Dropdown Styling */
+.dropdown-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 20px;
+}
+
+.styled-select {
+  width: 80%;
+  padding: 10px 15px;
+  border: 2px solid #0078d7;
+  border-radius: 10px;
+  background: linear-gradient(to right, #ffffff, #f4faff);
+  font-size: 15px;
+  color: #333;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%230078d7' stroke-width='2' d='M7 7l3 3 3-3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 12px) center;
+  background-size: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.styled-select:hover {
+  background: linear-gradient(to right, #cfe9ff, #e9f4ff);
+}
+
+.styled-select:focus {
+  outline: none;
+  border-color: #005fa3;
+  box-shadow: 0 0 5px rgba(0, 120, 215, 0.3);
+}
+
+/* Section Wrappers */
+ul#dropdown {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0 25px;
+}

@@ -144,9 +144,7 @@ async function deleteRabbitHole(url){
 
             const index = rabbitData[previous]["next"].indexOf(url);
             if (index > -1) {
-                console.log(rabbitData[previous]["next"], index);
                 rabbitData[previous]["next"].splice(index, 1);
-                console.log(rabbitData[previous]["next"], index);
             }
         
         }
@@ -175,7 +173,6 @@ function ifAuto(){
 //---------------
 //Path Builder
 //---------------
-
 async function BuildPath(url, title, favIconUrl){
     /*
     Build path to the current URL from entry
@@ -292,13 +289,7 @@ async function switchNode(urlToAdd, urlToMove){
         rabbitData[urlToAdd]["next"].push(urlToMove)
         rabbitData[urlToMove] = tempStore;
     
-        console.log(rabbitData)
-    
-    
-    
         chrome.storage.local.set({ [rabbitName]: rabbitData });
-
-        
     });
 
 }
@@ -310,10 +301,7 @@ async function saveTabs(name, tabs){
     await chrome.storage.local.get(["Tabs"]).then((result) => {
         result["Tabs"][name] = tabs;
 
-        console.log(tabs);
-
-        console.log(result["Tabs"])
-        chrome.storage.local.set({ ["Tabs"]: result});
+        chrome.storage.local.set({Tabs: result["Tabs"]});
     });
 }
 
@@ -432,6 +420,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     }
 
+    //Send tab data to panel - refer to tabs.js
+    else if (message === 'tabs_data') {
+        chrome.tabs.query({currentWindow: true}, function(tabs){
+            sendResponse(tabs);
+        });
+    }
+
     //When page opens, message context script confirming url containment
     else if (message === 'contains') {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
@@ -446,10 +441,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     }
 
-    //Add to saved tabs
+    //Add to saved tab collection
     else if (message.action === 'nameTabs') {
         saveTabs(message.name, message.tabs)
     }
+
+    //Add to saved tabs
+    else if (message === 'getTabCollections') {
+        chrome.storage.local.get(["Tabs"]).then((result) => {
+            let tabsData = result["Tabs"];
+            
+            sendResponse({"Tabs": tabsData});
+        });
+
+        return true;
+    }
+
 
     //When node is placed in another node, update memory
     else if (message.action === 'switchNode') {
@@ -484,6 +491,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
 
         currentPage = "/frontend/collab/collab.html";
+    }
+
+    else if (message === 'tabs') {
+        chrome.sidePanel.setOptions({
+            path: '/frontend/tabs/tabs.html',
+        });
+
+        currentPage = "/frontend/tabs/tabs.html";
     }
 
     else if (message === 'explore') {
