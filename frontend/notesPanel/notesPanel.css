@@ -1,57 +1,85 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Georgia', serif;
-    background: linear-gradient(to bottom, #fdfbfb, #ebedee);
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  
-  /* Editor Wrapper */
-  #editor-wrapper {
-    width: 90%;
-    max-width: 1000px;
-    height: 85vh;
-    background: #ffffff;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-  }
-  
-  /* Editor Content Area */
-  #editor {
-    width: 100%;
-    height: 100%;
-    outline: none;
-    border: none;
-    font-size: 18px;
-    line-height: 1.6;
-    color: #444;
-    text-align: left;
-    padding: 10px;
-    background: transparent;
-    font-family: 'Georgia', serif;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow-y: auto;
-  }
-  
-  /* Placeholder text
-  #editor:empty:before {
-    content: "Take Notes Here...";
-    color: #999;
-    font-style: italic;
-  }
-   */
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f5f7fb;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#editor-container {
+  background: #fff;
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e9eff7;
+  padding: 8px 12px;
+}
+
+#note-title {
+  flex: 1;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  background: transparent;
+  outline: none;
+}
+
+#save-status {
+  font-size: 14px;
+  color: #777;
+}
+
+#editor {
+  flex: 1;
+  padding: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  outline: none;
+  white-space: pre-wrap;
+  overflow-y: auto;
+}
+
+#editor:empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+}
+
+#footer {
+  display: flex;
+  justify-content: space-between;
+  background: #f3f6fa;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #555;
+  border-top: 1px solid #e1e4ea;
+}
+
+#toolbar button {
+  margin-left: 7%;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 130%;
+}

@@ -385,6 +385,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     else if (message.action === 'takeNote') {
         chrome.storage.local.get([rabbitName]).then((result) => {
             let rabbitURL = result[rabbitName]["curr"]
+
+            console.log(result[rabbitName][rabbitURL]["Content"]);
             
             //Update Result
             result[rabbitName][rabbitURL]["Content"] = message.content;
@@ -521,7 +523,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
             //Send back content to add to text editor
             chrome.storage.local.get([rabbitName]).then((result) => {
-                
                 let rabbitData = result[rabbitName] || {"curr": null};
                 if(tabs[0].url in rabbitData && ("Content" in rabbitData[tabs[0].url])){
                     sendResponse({"return": rabbitData[tabs[0].url]["Content"]});

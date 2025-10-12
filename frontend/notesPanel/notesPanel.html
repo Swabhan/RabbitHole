@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beautiful Text Editor</title>
-  <link rel="stylesheet" href="notesPanel.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes</title>
+  <link rel="stylesheet" href="notesPanel.css" />
 </head>
 <body>
-  <div id="editor-wrapper">
-    <div id="editor" contenteditable="true" spellcheck="true"></div>
+  <div id="editor-container">
+    <div id="toolbar">
+      <h1 id="note-title">Page Notes</h1>
+      <button data-command="bold"><b>B</b></button>
+      <button data-command="italic"><i>I</i></button>
+      <button data-command="underline"><u>U</u></button>
+      <button data-command="hiliteColor" data-value="yellow">🖍️</button>
+      <button data-command="insertUnorderedList">• List</button>
+    </div>
+
+    <div id="editor" contenteditable="true" spellcheck="true" data-placeholder="Take Notes Here..."></div>
+
+    <div id="footer">
+      <span id="save-status">Saved ✓</span>
+    </div>
   </div>
+
   <script src="notesPanel.js"></script>
 </body>
 </html>

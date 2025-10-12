@@ -465,10 +465,11 @@ function notesWrap() {
     chrome.runtime.sendMessage("notes", (response) => {
         //Send Message with conent, to be listened to by notesPanel.js
         if(response["return"] != "false"){
-            console.log(response["return"])
-            chrome.runtime.sendMessage(
-                { action: "inputContent", content: response["return"]}
-            );
+            setTimeout(() => {
+                chrome.runtime.sendMessage(
+                    { action: "inputContent", content: response["return"]}
+                );
+            }, 300); //Short delay to allow notes DOM to initialize
         }
     });
 }
