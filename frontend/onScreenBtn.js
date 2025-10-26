@@ -78,6 +78,58 @@ btnRabbit.onmouseout = function () {
     btnRabbit.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
 };
 
+// Creating the "Go Forward" button
+var btnPrevious = document.createElement("BUTTON");
+btnPrevious.id = "Previous";
+
+// Styling the fwdRabbit
+btnPrevious.style.width = "50px";
+btnPrevious.style.height = "50px";
+btnPrevious.style.border = "none";
+btnPrevious.style.borderRadius = "5px";
+btnPrevious.style.overflow = "hidden";
+btnPrevious.style.padding = "0";
+btnPrevious.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 1.4)";
+btnPrevious.style.cursor = "pointer";
+btnPrevious.style.backgroundColor = "#fff";
+btnPrevious.style.marginTop = "-60px";
+btnPrevious.style.marginBottom = "10px";
+btnPrevious.style.color = "pink";
+
+// Adding hover effect to the Rabbit button
+btnPrevious.onmouseover = function () {
+    btnPrevious.style.boxShadow = "0 6px 8px rgba(0, 0, 0, 0.15)";
+};
+btnPrevious.onmouseout = function () {
+    btnPrevious.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+};
+
+// Creating the "Go Forward" button
+var btnForward = document.createElement("BUTTON");
+btnForward.id = "forward";
+
+// Styling the fwdRabbit
+btnForward.style.width = "50px";
+btnForward.style.height = "50px";
+btnForward.style.border = "none";
+btnForward.style.borderRadius = "5px";
+btnForward.style.overflow = "hidden";
+btnForward.style.padding = "0";
+btnForward.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 1.4)";
+btnForward.style.cursor = "pointer";
+btnForward.style.backgroundColor = "#fff";
+btnForward.style.marginTop = "-60px";
+btnForward.style.marginBottom = "10px";
+btnForward.style.color = "pink";
+
+// Adding hover effect to the Rabbit button
+btnForward.onmouseover = function () {
+    btnForward.style.boxShadow = "0 6px 8px rgba(0, 0, 0, 0.15)";
+};
+btnForward.onmouseout = function () {
+    btnForward.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+};
+
 // Creating the add button
 var btnPlus = document.createElement("BUTTON");
 btnPlus.id = "dig";
@@ -405,26 +457,71 @@ btnInfo.onmouseout = function () {
     btnInfo.style.backgroundColor = "#34A853";
 };
 
-
-
-//Set digButton functionality
+// Set current page functionality
 chrome.runtime.sendMessage("contains", (response) => {
-    //If rabbit hole contains url, set button to checked, otherwise +
     const digButton = document.getElementById("dig");
 
-    if(response["return"] == "false") {
+    const existingNavRow = document.getElementById("navRow");
+    if (existingNavRow) existingNavRow.remove();
+
+    // Create a horizontal row container
+    const navRow = document.createElement("div");
+    navRow.id = "navRow";
+    navRow.style.display = "flex";
+    navRow.style.flexDirection = "row";
+    navRow.style.justifyContent = "center";
+    navRow.style.alignItems = "center";
+    navRow.style.gap = "10px";
+    navRow.style.marginTop = "-60px";
+    navRow.style.marginRight = "60px";
+
+    if (response["return"] === "false") {
         digButton.innerHTML = "+";
-    }
-    else {
+
+        if(response.data.curr){
+            let linkPrev = document.createElement("a");
+            linkPrev.href = response.data.curr;
+            linkPrev.appendChild(btnPrevious);
+
+            btnContainer.prepend(linkPrev);
+        }
+    } else {
         digButton.innerHTML = "✔";
+
+        const hasNext = response.data[response["return"]].next;
+
+        if (hasNext) {
+            // Add both forward and backwards if both are possible
+            let linkPrev = document.createElement("a");
+            linkPrev.href = response.data.prev;
+            linkPrev.appendChild(btnPrevious);
+
+            let linkFwd = document.createElement("a");
+            linkFwd.href = hasNext[0];
+            linkFwd.appendChild(btnForward);
+
+            navRow.appendChild(linkPrev);
+            navRow.appendChild(linkFwd);
+            btnContainer.prepend(navRow);
+        } else {
+            // Only show previous if forward doesn't exist
+            let linkPrev = document.createElement("a");
+            linkPrev.href = response.data.curr;
+            linkPrev.appendChild(btnPrevious);
+            btnContainer.prepend(linkPrev);
+        }
     }
-    
 });
 
 // Appending buttons to the container
-btnContainer.appendChild(btnPlus); // Add Plus button first
-btnContainer.appendChild(btnNotes); // Add Notes button second
-btnContainer.appendChild(btnRabbit); // Add Rabbit button third
+btnContainer.appendChild(btnPlus);
+btnContainer.appendChild(btnNotes);
+btnContainer.appendChild(btnRabbit);
+btnContainer.appendChild(btnGraph);
+btnContainer.appendChild(btnGroup);
+btnContainer.appendChild(btnTab);
+btnContainer.appendChild(btnExplore);
+btnContainer.appendChild(btnInfo);
 
 // Appending the container and the hover trigger to the DOM
 document.body.appendChild(hoverTrigger);
@@ -432,12 +529,6 @@ document.body.appendChild(btnContainer);
 
 function toggleWrap() {
     // Send message to service worker (service.js) to open panel
-    btnContainer.appendChild(btnGraph);
-    btnContainer.appendChild(btnGroup);
-    btnContainer.appendChild(btnTab);
-    btnContainer.appendChild(btnExplore);
-    btnContainer.appendChild(btnInfo);
-    
     chrome.runtime.sendMessage("toggle_panel", () => {});
 }
 
@@ -456,7 +547,6 @@ function digWrap() {
 
         digButton.innerHTML = "+";
     }
-
 }
 
 var content = "";
@@ -469,7 +559,7 @@ function notesWrap() {
                 chrome.runtime.sendMessage(
                     { action: "inputContent", content: response["return"]}
                 );
-            }, 300); //Short delay to allow notes DOM to initialize
+            }, 100); //Short delay to allow notes DOM to initialize
         }
     });
 }

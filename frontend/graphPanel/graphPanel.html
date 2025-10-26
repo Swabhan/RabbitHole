@@ -3,27 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Tree</title>
+    <title>RabbitHole Graph</title>
     <link rel="stylesheet" href="graphPanel.css">
     <script src="/third_party/jquery-3.7.1.js"></script>
 </head>
 <body>
-    <button id="how-to-button">Info</button>
-    <br>
+    <!-- Header with controls -->
+    <div id="header">
+        <button id="how-to-button">Info</button>
+    </div>
 
-    <div id="background-fade"></div>
+    <!-- Main content area -->
+    <div id="main-content">
+        <div id="breadcrumb" style="font-size: 12px; color: #6c757d; margin-bottom: 8px; padding: 4px 8px; background: #f8f9fa; border-radius: 4px;"></div>
+        <div id="tree-container"></div>
+        <div id="empty-state">
+            <h3>No nodes to display</h3>
+            <p>Start browsing to build your rabbit hole graph!</p>
+        </div>
+    </div>
 
-    <div id="popup-container-info">
+    <!-- Popup for info -->
+    <div id="background-fade" style="display: none;"></div>
+    <div id="popup-container-info" style="display: none;">
         <h2>How To Use This Page</h2>
         <ul>
-            <li><strong>Double-click</strong> Open Link in a New Tab</li>
-            <li><strong>Shift + Click</strong> Select Tab(s) to Enable Tab Management</li>
-            <li><strong>Click Top Right Corner of a Box </strong> Drag and Move it to Another Position</li>
+            <li><strong>Double-click</strong>: Open Link in a New Tab</li>
+            <li><strong>Shift + Click</strong>: Select Tab(s) to Enable Tab Management</li>
+            <li><strong>Click Top Right Corner of Desired Box</strong>: Drag and Move it to Another Position</li>
         </ul>
         <button id="close-popup">Close</button>
     </div>
 
-    <div id="tree-container"></div>
+    <!-- Popup for tab management -->
+    <div id="popup-container" style="display: none;">
+        <div id="popup">
+            <h2>Enter name for managed tabs</h2>
+            <input type="text" id="input" placeholder="Enter a Name" />
+            <div>
+                <button id="submit-option">Submit</button>
+                <button id="cancel-option">Cancel</button>
+            </div>
+        </div>
+    </div>
     
     <script src="graphPanel.js" type="module"></script>
 </body>

@@ -173,11 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (elementsAtPoint[0] === node) {
                 isHovered = link.href;
                 if(isDragging && currentNode){
-                    if(node != currentNode){
-                        node.style.backgroundColor = "#fff1cc";
-                    }
-                    
-
                     //Potential feature, add to container upon hover when dragging
                     // node.appendChild(currentNode);
                 }

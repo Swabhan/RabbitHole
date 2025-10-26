@@ -23,7 +23,6 @@ chrome.runtime.sendMessage("panel_data", (response) => { //- Refer to service.js
       
     }
 
-
     //--Setting Specific Rabbit
     pageSelector.value = response["rabbitName"];
 
@@ -154,3 +153,20 @@ document.addEventListener("DOMContentLoaded", () => {
         
     });
 });
+
+const deleteButton = document.getElementById("delete-rabbit");
+
+deleteButton.addEventListener("click", () => {
+  const pageSelector = document.getElementById("page-selector");
+
+  chrome.runtime.sendMessage(
+      { action: "deleteRabbit", rabbit: pageSelector.value },
+      (response) => {
+        location.reload();
+        return false;
+      }
+  );
+  
+  console.log("here");
+
+})

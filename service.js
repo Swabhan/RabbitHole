@@ -10,7 +10,7 @@
 //--------
 var rabbitName = "";
 
-//Set Rabbit Default to Tutorial
+//Allows extension to recieve currently active rabbit
 async function getRabbitName(){
     await chrome.storage.local.get("rabbit").then((result) => {
         if (!result.rabbit) {
@@ -18,6 +18,8 @@ async function getRabbitName(){
         }
 
         rabbitName = result.rabbit["curr"];
+
+        setupRabbit();
     }).catch((error) => {
         chrome.storage.local.set({"rabbit": {"curr": "Tutorial", "holes": []}});
         rabbitName = "Tutorial"
@@ -33,7 +35,17 @@ async function setupRabbit(){
     await chrome.storage.local.get([rabbitName, "Tabs"]).then((result) => 
     {
         if (!result[rabbitName]) {
-            chrome.storage.local.set({ [rabbitName]: { "curr": null, "entry": null } });
+            let initialMap = { "curr": rabbitName, "entry": rabbitName }
+            initialMap[rabbitName] = {
+                "method": "search: ",
+                "prev": null,
+                "next": null,
+                "title": rabbitName,
+                "favIcon": "favIconUrl"
+            }
+            
+            console.log(initialMap);
+            chrome.storage.local.set({ [rabbitName]: initialMap});
         }
 
         if (!result["Tabs"]) {
@@ -49,7 +61,6 @@ async function setupRabbit(){
 
 setupRabbit();
 
-
 //Enable Side Panel to open on button click
 chrome.sidePanel
           .setPanelBehavior({ openPanelOnActionClick: true })
@@ -60,7 +71,7 @@ chrome.sidePanel
 //-------------------------
 
 async function updateRabbitHole(url, title, favIconUrl){
-    rabbitName = await setupRabbit();
+    rabbitName = await setupRabbit(); //Confirms intial data in place
 
     await chrome.storage.local.get([rabbitName]).then((result) => {
         /*
@@ -79,26 +90,19 @@ async function updateRabbitHole(url, title, favIconUrl){
                 "favIcon": favIconUrl
             };
            
-            //Set entry point for graph
-            if(rabbitData["curr"] == null){
-                rabbitData["entry"] = url;
-                rabbitData["curr"] = url;
-            } else {
-                //If next is null, use as empty array
-                if(rabbitData[rabbitData["curr"]]["next"] == null){
-                    rabbitData[rabbitData["curr"]]["next"] = [];
-                }
-
-                //Push to array
-                rabbitData[rabbitData["curr"]]["next"].push(url);
+            //Create list to store proceeding urls
+            if(rabbitData[rabbitData["curr"]]["next"] == null){
+                rabbitData[rabbitData["curr"]]["next"] = [];
             }
+
+            //Push to array
+            rabbitData[rabbitData["curr"]]["next"].push(url);
 
             //Update current working url
             rabbitData["curr"] = url;
             
         }
         
-
         //Set rabbit hole
         chrome.storage.local.set({ [rabbitName]: rabbitData });
     });
@@ -381,12 +385,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ success: true });
     }
 
+    //Delete Rabbit
+    else if (message.action === 'deleteRabbit') {
+        chrome.storage.local.get(["rabbit"]).then((result) => {
+            //Delete rabbit hole name from list
+            const indexToRemove = result.rabbit.holes.indexOf(message.rabbit);
+            if (indexToRemove > -1) {
+                result.rabbit.holes.splice(indexToRemove, 1);
+            }
+
+            result.rabbit.curr = result.rabbit.holes[0]
+
+            //Delete Paths dug by rabbit
+            chrome.storage.local.remove([rabbitName]);
+
+            //Set new rabbit hole as default
+            result.rabbit.holes
+
+            chrome.storage.local.set(result);
+        });
+
+        sendResponse({ success: true });
+    }
+
     //Store notes, should happen every few seconds
     else if (message.action === 'takeNote') {
         chrome.storage.local.get([rabbitName]).then((result) => {
-            let rabbitURL = result[rabbitName]["curr"]
-
-            console.log(result[rabbitName][rabbitURL]["Content"]);
+            let rabbitURL = result[rabbitName]["curr"];
             
             //Update Result
             result[rabbitName][rabbitURL]["Content"] = message.content;
@@ -435,9 +460,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.storage.local.get([rabbitName]).then((result) => {
                 let rabbitData = result[rabbitName] || {"curr": null};
                 if(tabs[0].url in rabbitData){
-                    sendResponse({"return": "true"});
+                    sendResponse({"return": tabs[0].url, data: rabbitData});
                 } else {
-                    sendResponse({"return": "false"});
+                    sendResponse({"return": "false", data: rabbitData});
                 }
             });
         });
