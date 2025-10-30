@@ -105,6 +105,47 @@ function createPopup() {
 
   document.getElementById("cancel-option").addEventListener("click", closePopup);
 }
+
+
+/*
+    Allow Edit Data
+
+    Functionality from pressing edit button
+*/
+function createEditPopup() {
+  const popupContainer = document.getElementById("popup-container");
+  popupContainer.style.display = "flex";
+
+  popupContainer.innerHTML = `
+    <div id="popup">
+      <h2>Edit Option</h2>
+      <input type="text" id="new-option-input" placeholder="Enter a new name" />
+      <div>
+        <button id="submit-option">Submit</button>
+        <button id="cancel-option">Cancel</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("submit-option").addEventListener("click", () => {
+    const pageSelector = document.getElementById("page-selector");
+    const inputValue = document.getElementById("new-option-input").value.trim();
+    if (inputValue) {
+      chrome.runtime.sendMessage(
+          { action: "editRabbit", rabbit: pageSelector.value, content: inputValue},
+          (response) => {
+            location.reload();
+            return false;
+          }
+      );
+    }
+
+    closePopup();
+
+  });
+
+  document.getElementById("cancel-option").addEventListener("click", closePopup);
+}
   
 function addNewOption(name) {
   const select = document.getElementById("page-selector");
@@ -166,7 +207,11 @@ deleteButton.addEventListener("click", () => {
         return false;
       }
   );
-  
-  console.log("here");
+})
 
+const editButton = document.getElementById("edit-rabbit");
+
+editButton.addEventListener("click", () => {
+  createEditPopup();
+  this.value = "";
 })

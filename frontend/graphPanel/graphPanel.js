@@ -84,9 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Append the new node to a random existing node
             const parentNode = parentNodes[childToParent[node["prev"]]];
-            console.log(parentNodes, childToParent[node["prev"]])
-
-            console.log(parentNode)
+            
             const childContainer =  parentNode.querySelector(".children") || createChildContainer(parentNode);
 
             childContainer.appendChild(newNode);

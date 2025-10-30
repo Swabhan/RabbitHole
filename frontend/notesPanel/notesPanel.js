@@ -27,6 +27,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Only allow editing when page is added to rabbit hole
+  chrome.runtime.sendMessage("contains", (response) => { 
+    if(response["return"] == "false") {
+      editor.setAttribute("data-placeholder", "Must add page to rabbit hole prior to editing notes. You may do this by clicking on the + button");
+
+      editor.contentEditable = false;
+    }
+  })
+
   // Handle text editing (tab + enter + formatting)
   editor.addEventListener("keydown", (e) => {
     if (e.key === "Tab") {
