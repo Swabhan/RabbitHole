@@ -9,18 +9,18 @@
 <body>
   <div id="editor-container">
     <div id="toolbar">
-      <h1 id="note-title">Page Notes</h1>
-      <button data-command="bold"><b>B</b></button>
-      <button data-command="italic"><i>I</i></button>
-      <button data-command="underline"><u>U</u></button>
-      <button data-command="hiliteColor" data-value="yellow">🖍️</button>
-      <button data-command="insertUnorderedList">• List</button>
+      <button data-command="bold" title="Bold (Ctrl + B)"><b>B</b></button>
+      <button data-command="italic" title="Italic (Ctrl + I)"><i>I</i></button>
+      <button data-command="underline" title="Underline (Ctrl + U)"><u>U</u></button>
+      <button data-command="hiliteColor" data-value="yellow" title="Highlight">🖍️</button>
+      <button data-command="insertUnorderedList" title="Bullet List">• List</button>
     </div>
     
-    <div id="editor" contenteditable="true" spellcheck="true" data-placeholder="Take Notes Here..."></div>
+    <div id="editor" contenteditable="true" spellcheck="true" data-placeholder="Take Notes Here... Click on bell icon to automatically open notes when on this page"></div>
 
     <div id="footer">
       <span id="save-status">Saved ✓</span>
+      <button id="note-button" title="Enable this page to auto-open your notes">Set Popup On Page</button>
     </div>
   </div>
 

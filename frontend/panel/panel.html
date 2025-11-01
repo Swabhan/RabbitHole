@@ -1,54 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rabbit Hole</title>
     <link rel="stylesheet" href="panel.css">
   </head>
   <body>
     <div class="side-panel">
-      
-      <center>
-        <div class="dropdown-container">
-          <select id="page-selector" class="styled-select">
-            <option>Select Rabbit Hole</option>
-            <option value="add-new" class="special-option">Add New</option>
-          </select>
-        </div>
-      </center>
-   
+      <header>
+        <h1 id="header">Rabbit Hole</h1>
+        <p class="subtitle">Path to Current Page</p>
+      </header>
+
+      <div class="dropdown-container">
+        <select id="page-selector" class="styled-select">
+          <option>Select Rabbit Hole</option>
+          <option value="add-new" class="special-option">+ Add New</option>
+        </select>
+      </div>
+
+      <div class="button-row">
+        <button id="edit-rabbit" class="action-btn secondary">Edit</button>
+        <button id="delete-rabbit" class="action-btn danger">Delete</button>
+      </div>
+
+      <ul id="linked-list"></ul>
 
       <div id="popup-container" style="display: none;"></div>
-
-      <br>
-      <button id="delete-rabbit">Delete</button>
-      <button id="edit-rabbit">Edit</button>
-
-      <h1 id="header">Path To Current Page</h1>
-
-      <br>
-      <br>
-
-
-      <ul id="linked-list">
-        <!-- Will populate via DOM in panel.js -->
-
-        <!-- Example -->
-        <!-- <li>
-          <img src="https://www.google.com/favicon.ico" alt="Chrome Icon" />
-          <div class="content">
-            <p>First node content</p>
-          </div>
-        </li> -->
-      </ul>
-
-      <br>
-      <br>
-      <br>
-      
     </div>
 
-   
     <script src="panel.js" defer></script>
-    
   </body>
 </html>

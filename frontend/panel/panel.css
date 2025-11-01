@@ -1,106 +1,164 @@
+/* ---------- General Layout ---------- */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
+  font-family: 'Inter', Arial, sans-serif;
+  background: #ffffff; /* White fills the whole page */
+  color: #222;
   display: flex;
   justify-content: center;
-  height: 100vh;
+  align-items: flex-start;
+  min-height: 100vh;
 }
 
+/* ---------- Panel Container ---------- */
+.side-panel {
+  width: 100%;
+  max-width: 500px;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- Header ---------- */
 #header {
+  margin: 0;
+  font-size: 1.7rem;
+  color: #0056d6;
   text-align: center;
-  color: #0077fffb;
-  font-size: 1.5rem;
-  margin: 10px;
+  letter-spacing: 0.5px;
+  font-weight: 700;
 }
 
+.subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ---------- Dropdown ---------- */
+.dropdown-container {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.styled-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #0078d7;
+  border-radius: 8px;
+  background: linear-gradient(to right, #ffffff, #f4faff);
+  font-size: 15px;
+  color: #333;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%230078d7' stroke-width='2' d='M7 7l3 3 3-3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 12px) center;
+  background-size: 10px;
+  transition: all 0.25s ease;
+}
+
+.styled-select:hover {
+  border-color: #005bbf;
+  background: linear-gradient(to right, #e7f2ff, #ffffff);
+}
+
+.styled-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.25);
+}
+
+/* ---------- Buttons ---------- */
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.action-btn {
+  padding: 7px 14px; /* smaller buttons */
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem; /* smaller text */
+  transition: background 0.25s, transform 0.1s;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.action-btn.secondary {
+  background-color: #0078d7;
+  color: white;
+}
+
+.action-btn.secondary:hover {
+  background-color: #005bbf;
+}
+
+.action-btn.danger {
+  background-color: #f44336;
+  color: white;
+}
+
+.action-btn.danger:hover {
+  background-color: #d32f2f;
+}
+
+/* ---------- Linked List ---------- */
 #linked-list {
+  width: 100%;
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 35px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 #linked-list li {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
-  position: relative;
+  background: #eaf0ff; /* darker cards */
+  border: 1px solid #cfd9f4;
+  border-radius: 10px;
+  padding: 14px 18px; /* slightly bigger */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
 }
 
-#linked-list li:last-child::after {
-  content: none;
+#linked-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
 }
 
-#linked-list a::after {
-  content: '';
-  width: 2px;
-  height: 30px;
-  background-color: #007bff;
-  position: absolute;
-  left: 53%;
-  bottom: -30px;
-  transform: translateX(-50%);
-}
-
-.linked-list .node {
-  background-color: #007bff;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-  margin-left: 10px;
-  overflow: hidden;
-  position: relative;
-}
-
-.linked-list .node + .node {
-  margin-left: 10px;
-}
-
-#linked-list .content {
-  flex: 1;
-  padding: 10px;
-  margin-left: 4%;
-  margin-right: 4%;
-  background-color: #f4f4f4;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+#linked-list img {
+  width: 28px;
+  height: 28px;
+  margin-right: 14px;
 }
 
 #linked-list .content p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  color: #222;
 }
 
-select {
-  width: 90%;
-  padding: 8px;
-  margin: 10px 5%;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f4f4f4;
-  font-size: 0.9rem;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-select:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
+/* ---------- Popup ---------- */
 #popup-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   z-index: 1000;
   justify-content: center;
@@ -109,78 +167,38 @@ select:focus {
 
 #popup {
   background: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
   text-align: center;
-  width: 300px;
+  width: 320px;
+  animation: popupFade 0.25s ease;
 }
 
 #popup input {
   width: 90%;
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 #popup button {
   padding: 10px 20px;
-  background: #007bff;
+  background: #0078d7;
   color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
+  transition: background 0.25s;
 }
 
 #popup button:hover {
-  background: #0056b3;
+  background: #005bbf;
 }
 
-
-.dropdown-container {
-  position: center;
-  width: 250px;
-}
-
-.styled-select {
-  width: 100%;
-  padding: 10px 15px;
-  border: 2px solid #0078d7;
-  border-radius: 8px;
-  background: linear-gradient(to right, #ffffff, #f0f8ff);
-  font-size: 16px;
-  color: #333;
-  appearance: none; /* Removes default dropdown icon */
-  -webkit-appearance: none; /* For Safari */
-  position: relative;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%230078d7' stroke-width='2' d='M7 7l3 3 3-3'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: calc(100% - 10px) center;
-  background-size: 10px;
-}
-
-/* Add hover and focus effects */
-.styled-select:hover {
-  border-color: #0053a6;
-  background: linear-gradient(to right, #c5ebfc, #f0f8ff);
-}
-
-.styled-select:focus {
-  outline: none;
-  border-color: #ffffff;
-}
-
-/* Style the special "Add New" option */
-.styled-select .special-option {
-  color: #004b89;
-  background-color: #e6f7ff;
-}
-
-.styled-select,
-.styled-select .special-option {
-  transition: all 0.3s ease;
+@keyframes popupFade {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

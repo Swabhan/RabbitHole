@@ -23,18 +23,55 @@ body {
 #toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   background: #e9eff7;
   padding: 8px 12px;
+  gap: 8px;
+  border-bottom: 1px solid #d9e1eb;
 }
 
-#note-title {
-  flex: 1;
+#toolbar button {
+  background: #ffffff;
+  border: 1px solid #cdd7e2;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#toolbar button:hover {
+  background: #dce7f7;
+  border-color: #b6c8e1;
+  transform: translateY(-1px);
+}
+
+#toolbar button:active {
+  background: #cbdcf4;
+  transform: translateY(0);
+}
+
+#note-button {
   border: none;
-  font-size: 16px;
-  font-weight: 500;
-  background: transparent;
-  outline: none;
+  background: #4f7cff;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#note-button:hover {
+  background: #3d68e3;
+  transform: translateY(-1px);
+}
+
+#note-button:active {
+  background: #3458c2;
+  transform: translateY(0);
 }
 
 #save-status {
@@ -61,25 +98,20 @@ body {
 #footer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background: #f3f6fa;
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   color: #555;
   border-top: 1px solid #e1e4ea;
 }
 
-#toolbar button {
-  margin-left: 7%;
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: none;
-  box-shadow: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  font-size: 130%;
+#toolbar button.active {
+  background: #cdddfc !important;
+  border-color: #98b3f9 !important;
+}
+
+#note-button.active {
+  background: #3d68e3 !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }

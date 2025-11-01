@@ -610,3 +610,51 @@ btnExplore.addEventListener("click", exploreWrap);
 
 // When info button is clicked, open info page in side panel
 btnInfo.addEventListener("click", infoWrap);
+
+chrome.runtime.sendMessage({action: "containsPopup"}, (response) => {
+    if(response["success"] == "true"){
+        createMessageButton()
+    }
+});
+
+function createMessageButton() {
+    if (document.getElementById("floating-popup-btn")) return;
+
+    const button = document.createElement("button");
+    button.id = "floating-popup-btn";
+    button.textContent = "Page Note From Your Rabbit";
+    button.style.position = "fixed";
+    button.style.bottom = "20px";
+    button.style.right = "20px";
+    button.style.zIndex = "9999";
+    button.style.padding = "10px 16px";
+    button.style.backgroundColor = "#4CAF50";
+    button.style.color = "#fff";
+    button.style.border = "none";
+    button.style.borderRadius = "8px";
+    button.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+    button.style.cursor = "pointer";
+
+    document.body.appendChild(button);
+
+    const popup = document.createElement("div");
+    popup.id = "floating-popup";
+    popup.textContent = "Hello! This is your popup.";
+    popup.style.position = "fixed";
+    popup.style.bottom = "70px";
+    popup.style.right = "20px";
+    popup.style.zIndex = "10000";
+    popup.style.padding = "12px";
+    popup.style.backgroundColor = "white";
+    popup.style.border = "1px solid #ccc";
+    popup.style.borderRadius = "10px";
+    popup.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+    popup.style.display = "none";
+
+    document.body.appendChild(popup);
+
+    // Toggle popup visibility on button click
+    button.addEventListener("click", () => {
+        chrome.runtime.sendMessage("notes", () => {});
+    });
+}

@@ -193,25 +193,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
     });
+
+
+    const deleteButton = document.getElementById("delete-rabbit");
+
+    deleteButton.addEventListener("click", () => {
+      const pageSelector = document.getElementById("page-selector");
+
+      chrome.runtime.sendMessage(
+          { action: "deleteRabbit", rabbit: pageSelector.value },
+          (response) => {
+            location.reload();
+            return false;
+          }
+      );
+    })
+
+    const editButton = document.getElementById("edit-rabbit");
+
+    editButton.addEventListener("click", () => {
+      createEditPopup();
+      this.value = "";
+    })
 });
 
-const deleteButton = document.getElementById("delete-rabbit");
-
-deleteButton.addEventListener("click", () => {
-  const pageSelector = document.getElementById("page-selector");
-
-  chrome.runtime.sendMessage(
-      { action: "deleteRabbit", rabbit: pageSelector.value },
-      (response) => {
-        location.reload();
-        return false;
-      }
-  );
-})
-
-const editButton = document.getElementById("edit-rabbit");
-
-editButton.addEventListener("click", () => {
-  createEditPopup();
-  this.value = "";
-})

@@ -26,11 +26,10 @@ async function getRabbitName(){
 }
 
 async function changeRabbit(newRabbit){
-    // Update current rabbit only if needed
+    // Update current rabbit
     const res = await chrome.storage.local.get(["rabbit"]);
     res.rabbit.curr = newRabbit;
     await chrome.storage.local.set({ rabbit: res.rabbit });
-
 }
 
 //Checks if values exist within current rabbit hole, if not, set to default value
@@ -41,7 +40,7 @@ async function setupRabbit(){
     {
         //Sets starting point
         if (!result[rabbitName]) {
-            let initialMap = { "curr": rabbitName, "entry": rabbitName }
+            let initialMap = { "curr": rabbitName, "entry": rabbitName, "popups": [] }
             initialMap[rabbitName] = {
                 "method": "search: ",
                 "prev": null,
@@ -299,7 +298,7 @@ async function saveTabs(name, tabs){
 //---------------
 //Event Listeners
 //---------------
-let currPath; //Limits to path building to one time
+let currPath;
 let currentPage = "panel.html";
 
 //Listeners for tabs changes
@@ -310,16 +309,27 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 
     chrome.tabs.query({currentWindow: true, active: true}, async function(tabs){
         currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
+        // chrome.storage.local.get([rabbitName]).then((result) => {
+        //     const index = result[rabbitName]["popups"].indexOf(tabs[0].url);
+        //     if (index > -1) {
+        //         chrome.runtime.sendMessage({action: "buttonPopup"})
+        //     }
+        // });
     });
-
 });
 
 chrome.tabs.onUpdated.addListener(function (activeInfo) {
     //On tab Change
     chrome.tabs.query({currentWindow: true, active: true}, async function(tabs){
         currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
-    });
 
+        // chrome.storage.local.get([rabbitName]).then((result) => {
+        //     const index = result[rabbitName]["popups"].indexOf(tabs[0].url);
+        //     if (index > -1) {
+        //         chrome.runtime.sendMessage({action: "buttonPopup"})
+        //     }
+        // });
+    });
 });
 
 
@@ -370,14 +380,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     result.rabbit.holes.splice(indexToRemove, 1);
                 }
 
-                changeRabbit(result.rabbit.holes[0]);
-
                 //Delete Paths dug by rabbit
                 chrome.storage.local.remove([rabbitName]);
+                result.rabbit.curr = result.rabbit.holes[0];
 
                 chrome.storage.local.set(result);
             });
 
+            await setupRabbit();
             sendResponse({ success: true });
         }
 
@@ -448,6 +458,44 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse({ success: true });
         }
 
+        //Popups
+        else if (message.action === 'setPopup') {
+            chrome.storage.local.get([rabbitName]).then((result) => {
+                chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+                    result[rabbitName]["popups"].push(tabs[0].url)
+                    chrome.storage.local.set(result);
+                });
+                
+            });
+            sendResponse({ success: true });
+        }
+
+        else if (message.action === 'removePopup') {
+            chrome.storage.local.get([rabbitName]).then((result) => {
+                chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+                    const index = result[rabbitName]["popups"].indexOf(tabs[0].url);
+                    if (index > -1) {
+                        result[rabbitName]["popups"].splice(index, 1);
+                    }
+                    chrome.storage.local.set(result);
+                });
+                
+            });
+            sendResponse({ success: true });
+        }
+
+        else if (message.action === 'containsPopup') {
+            chrome.storage.local.get([rabbitName]).then((result) => {
+                chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+                    const index = result[rabbitName]["popups"].indexOf(tabs[0].url);
+                    if (index > -1) {
+                        sendResponse({ "success": "true" });
+                    } else {
+                        sendResponse({ "success": "false" });
+                    }
+                });
+            }); 
+        }
 
         //If different rabbit is selected, update current
         else if (message.action === 'updateRabbit') {
