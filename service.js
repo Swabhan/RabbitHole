@@ -300,38 +300,40 @@ async function saveTabs(name, tabs){
 //---------------
 let currPath;
 let currentPage = "panel.html";
+var openSidePanel = true;
 
 //Listeners for tabs changes
 let windowId;
 chrome.tabs.onActivated.addListener(function (activeInfo) {
-    //On Tab Open
-    windowId = activeInfo.windowId;
-
-    chrome.tabs.query({currentWindow: true, active: true}, async function(tabs){
-        currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
-        // chrome.storage.local.get([rabbitName]).then((result) => {
-        //     const index = result[rabbitName]["popups"].indexOf(tabs[0].url);
-        //     if (index > -1) {
-        //         chrome.runtime.sendMessage({action: "buttonPopup"})
-        //     }
-        // });
+    (async () => {
+        await refreshPanel(currentPage);
     });
 });
 
 chrome.tabs.onUpdated.addListener(function (activeInfo) {
-    //On tab Change
-    chrome.tabs.query({currentWindow: true, active: true}, async function(tabs){
-        currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
-
-        // chrome.storage.local.get([rabbitName]).then((result) => {
-        //     const index = result[rabbitName]["popups"].indexOf(tabs[0].url);
-        //     if (index > -1) {
-        //         chrome.runtime.sendMessage({action: "buttonPopup"})
-        //     }
-        // });
+    (async () => {
+        await refreshPanel(currentPage);
     });
 });
 
+
+async function refreshPanel(path){
+    chrome.tabs.query({currentWindow: true, active: true}, async function(tabs){
+        currPath = await BuildPath(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
+
+        await chrome.sidePanel.setOptions({
+            tabId: tabs[0].id,
+            path: null,
+            enabled: false
+        });
+
+        await chrome.sidePanel.setOptions({
+            tabId: tabs[0].id,
+            path: path,
+            enabled: true
+        });
+    });
+}
 
 //------------------
 //Message Listeners
@@ -346,14 +348,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         //If Rabbit Icon is clicked, side panel functionality
         if (message === 'toggle_panel') {
             chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-                chrome.sidePanel.open({ tabId: tabs[0].id });
-
                 chrome.sidePanel.setOptions({
-                    path: '/frontend/panel/panel.html',
+                    path: '/frontend/panel/panel.html'
                 });
+
+                if(openSidePanel == true){
+                    chrome.sidePanel.open({ tabId: tabs[0].id });
+                    openSidePanel = false;
+                }
 
                 currentPage = "/frontend/panel/panel.html";
             });
+
+            await refreshPanel(currentPage);
         }
 
         //Add new rabbit, will be present and selectable on dropdown in panel.html
@@ -367,7 +374,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
 
             await setupRabbit();
-                
+            await refreshPanel(currentPage);
             sendResponse({ success: true });
         }
 
@@ -388,6 +395,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
 
             await setupRabbit();
+            await refreshPanel(currentPage);
             sendResponse({ success: true });
         }
 
@@ -439,6 +447,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             await chrome.storage.local.remove(oldName);
 
             changeRabbit(newName)
+
+            await refreshPanel(currentPage);
             sendResponse({ success: true });
         }
 
@@ -499,14 +509,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         //If different rabbit is selected, update current
         else if (message.action === 'updateRabbit') {
-            chrome.storage.local.get(["rabbit"]).then((result) => {
-                //Update Result
-                result.rabbit.curr = message.rabbit;
+            const result = await chrome.storage.local.get(["rabbit"]);
+            result.rabbit.curr = message.rabbit;
+            await chrome.storage.local.set(result)
 
-                chrome.storage.local.set(result);
-                setupRabbit();
-            });
-
+            await setupRabbit();
+            await refreshPanel(currentPage);
             sendResponse({ success: true });
         }
 
@@ -514,7 +522,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         else if (message === 'panel_data') {
             chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
                 chrome.storage.local.get([rabbitName, "rabbit"]).then((result) => {
-
                     let rabbitData = result[rabbitName]  || {"curr": null};
                     sendResponse({"fullGraph": rabbitData, "path": currPath, "rabbitName": rabbitName, "holes": result["rabbit"]["holes"]});
                 });
@@ -568,6 +575,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
                 updateRabbitHole(tabs[0].url, tabs[0].title, tabs[0].favIconUrl);
             });
+
+            await refreshPanel(currentPage);
         }
 
         //If "✔" is clicked, cover hole functionality
@@ -575,6 +584,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
                 deleteRabbitHole(tabs[0].url);
             });
+
+            await refreshPanel(currentPage);
         }
 
         else if (message === 'graphPanel') {
@@ -629,7 +640,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
                 });
 
-                chrome.sidePanel.open({ tabId: tabs[0].id });
+                if(openSidePanel == true){
+                    chrome.sidePanel.open({ tabId: tabs[0].id });
+                    openSidePanel = false;
+                }
 
                 chrome.sidePanel.setOptions({
                     path: '/frontend/notesPanel/notesPanel.html',

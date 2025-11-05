@@ -311,7 +311,6 @@ document.addEventListener("DOMContentLoaded", () => {
         popupContainer.style.display = "none";
         popupContainer.innerHTML = "";
         
-        location.reload();
         return false;
     }
 
@@ -339,3 +338,16 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundFade.addEventListener('click', hidePopup);
     
 });
+
+/*
+Due to issue caused by reopening panel, this allows detection of closed panel to reset state of panel in service.js
+
+Also present in notesPanel.js
+*/
+// document.addEventListener('visibilitychange', () => {
+//   if (!(document.visibilityState === 'visible')) {
+//      setTimeout(() => {
+//       chrome.runtime.sendMessage({ action: "closePanelSignal" });
+//     }, 100);
+//   }
+// });

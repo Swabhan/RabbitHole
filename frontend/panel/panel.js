@@ -134,7 +134,6 @@ function createEditPopup() {
       chrome.runtime.sendMessage(
           { action: "editRabbit", rabbit: pageSelector.value, content: inputValue},
           (response) => {
-            location.reload();
             return false;
           }
       );
@@ -160,7 +159,6 @@ function closePopup() {
   popupContainer.style.display = "none";
   popupContainer.innerHTML = "";
   
-  location.reload();
   return false;
 }
 
@@ -186,7 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
             chrome.runtime.sendMessage(
                 { action: "updateRabbit", rabbit: pageSelector.value },
                 (response) => {
-                  location.reload();
                   return false;
                 }
             );
@@ -203,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
       chrome.runtime.sendMessage(
           { action: "deleteRabbit", rabbit: pageSelector.value },
           (response) => {
-            location.reload();
             return false;
           }
       );
@@ -217,3 +213,16 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 });
 
+
+/*
+Due to issue caused by reopening panel, this allows detection of closed panel to reset state of panel in service.js
+
+Also present in notesPanel.js
+*/
+// document.addEventListener('visibilitychange', () => {
+//   if (!(document.visibilityState === 'visible')) {
+//      setTimeout(() => {
+//       chrome.runtime.sendMessage({ action: "closePanelSignal" });
+//     }, 200);
+//   }
+// });

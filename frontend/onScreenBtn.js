@@ -655,6 +655,6 @@ function createMessageButton() {
 
     // Toggle popup visibility on button click
     button.addEventListener("click", () => {
-        chrome.runtime.sendMessage("notes", () => {});
+        notesWrap();
     });
 }
